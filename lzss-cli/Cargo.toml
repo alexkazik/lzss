@@ -1,0 +1,13 @@
+[package]
+name = "lzss-cli"
+version = "0.8.0"
+authors = ["ALeX Kazik <git@kazik.de>"]
+edition = "2018"
+description = "A LZSS en-/decompressor CLI (lossless data compression, in pure Rust)"
+repository = "https://github.com/alexkazik/lzss"
+license = "MIT"
+keywords = ["lzss", "compression", "cli"]
+categories = ["compression"]
+
+[dependencies]
+lzss = "0.8"
