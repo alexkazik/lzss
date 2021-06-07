@@ -1,0 +1,18 @@
+[package]
+name = "lzss"
+version = "0.8.0"
+authors = ["ALeX Kazik <alex@kazik.de>"]
+edition = "2018"
+description = "A LZSS en-/decompressor (lossless data compression, no_std capable, in pure Rust)"
+repository = "https://github.com/alexkazik/lzss"
+license = "MIT"
+keywords = ["lzss", "compression", "no_std"]
+categories = ["compression", "no-std"]
+
+[dependencies]
+void = { version = "1.0.2", default-features = false }
+
+[features]
+default = ['std']
+const_panic = []
+std = ['void/std']
