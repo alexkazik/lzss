@@ -40,16 +40,16 @@ This code is based on the [LZSS encoder-decoder by Haruhiko Okumura, public doma
 
 # Example
 ```rust
-use lzss::{Lzss, SliceInput, SliceOutput};
+use lzss::{Lzss, SliceReader, SliceWriter};
 
 type MyLzss = Lzss<10, 4, 0x20, 1024, 2048>;
 let input = b"Example Data";
 let mut output = [0; 30];
-let ((), output_result) = MyLzss::compress(
-  SliceInput::new(input),
-  SliceOutput::new(&mut output),
+let result = MyLzss::compress(
+  SliceReader::new(input),
+  SliceWriter::new(&mut output),
 );
-assert_eq!(output_result, Ok(14)); // there was no overflow and the output is 14 bytes long
+assert_eq!(result, Ok(14)); // there was no overflow and the output is 14 bytes long
 ```
 
 # Command-Line-Interface
