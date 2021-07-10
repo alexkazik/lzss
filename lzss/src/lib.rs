@@ -72,6 +72,18 @@
 //! assert_eq!(result, Ok(14)); // there was no overflow and the output is 14 bytes long
 //! ```
 
+#[cfg(doctest)]
+mod test_readme_md {
+  macro_rules! external_doc_test {
+    ($x:expr) => {
+      #[doc = $x]
+      extern "C" {}
+    };
+  }
+
+  external_doc_test!(include_str!("../README.md"));
+}
+
 mod bits;
 mod dynamic;
 mod error;
