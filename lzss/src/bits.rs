@@ -54,7 +54,7 @@ impl<W: Write> BitWriter<'_, W> {
     self.buf = (self.buf << len) | data;
     self.bits_in_buf += len;
 
-    while self.bits_in_buf > 8 {
+    while self.bits_in_buf >= 8 {
       self.bits_in_buf -= 8;
       self.writer.write((self.buf >> self.bits_in_buf) as u8)?;
     }
