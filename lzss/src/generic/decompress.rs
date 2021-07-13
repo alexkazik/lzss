@@ -37,8 +37,8 @@ impl<
           let j = (inp & ((1 << EJ) - 1)) as usize;
           for k in 0..=j + Self::P {
             let b = *unsafe { buffer.get_unchecked((i + k) & (Self::N - 1)) };
-            writer.write(b as u8).map_err(LzssError::WriteError)?;
-            *unsafe { buffer.get_unchecked_mut(r) } = b as u8;
+            writer.write(b).map_err(LzssError::WriteError)?;
+            *unsafe { buffer.get_unchecked_mut(r) } = b;
             r = (r + 1) & (Self::N - 1);
           }
         } else {

@@ -33,8 +33,8 @@ impl LzssDyn {
           let j = (ij & ((1 << self.ej) - 1)) as usize;
           for k in 0..=j + self.p() {
             let b = *unsafe { buffer.get_unchecked((i + k) & (self.n() - 1)) };
-            writer.write(b as u8).map_err(LzssError::WriteError)?;
-            *unsafe { buffer.get_unchecked_mut(r) } = b as u8;
+            writer.write(b).map_err(LzssError::WriteError)?;
+            *unsafe { buffer.get_unchecked_mut(r) } = b;
             r = (r + 1) & (self.n() - 1);
           }
         } else {
