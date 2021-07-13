@@ -93,6 +93,23 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     writer.finish().map_err(LzssError::WriteError)
   }
 
+  /// `alloc/std` Compress the input data into the output.
+  ///
+  /// The buffer, with `N2` bytes, is allocated on the heap.
+  #[cfg(feature = "alloc")]
+  pub fn compress_heap<R: Read, W: Write>(
+    mut reader: R,
+    mut writer: W,
+  ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
+    #[cfg(not(feature = "const_panic"))]
+    Self::assert_parameters();
+    let mut buffer = vec![C; N2];
+    Self::compress_internal(&mut reader, &mut writer, unsafe {
+      &mut *(buffer.as_mut_ptr() as *mut [u8; N2])
+    })?;
+    writer.finish().map_err(LzssError::WriteError)
+  }
+
   /// Compress the input data into the output.
   pub fn compress_with_buffer<R: Read, W: Write>(
     mut reader: R,
@@ -117,6 +134,23 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     Self::assert_parameters();
     let mut buffer: [u8; N] = [C; N];
     Self::decompress_internal(&mut reader, &mut writer, &mut buffer)?;
+    writer.finish().map_err(LzssError::WriteError)
+  }
+
+  /// `alloc/std` Decompress the input data into the output.
+  ///
+  /// The buffer, with `N` bytes, is allocated on the heap.
+  #[cfg(feature = "alloc")]
+  pub fn decompress_heap<R: Read, W: Write>(
+    mut reader: R,
+    mut writer: W,
+  ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
+    #[cfg(not(feature = "const_panic"))]
+    Self::assert_parameters();
+    let mut buffer = vec![C; N];
+    Self::decompress_internal(&mut reader, &mut writer, unsafe {
+      &mut *(buffer.as_mut_ptr() as *mut [u8; N])
+    })?;
     writer.finish().map_err(LzssError::WriteError)
   }
 
