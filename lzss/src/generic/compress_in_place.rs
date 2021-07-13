@@ -17,7 +17,7 @@ impl<
     if offset >= io.len() {
       return (0, None);
     }
-    if offset < (Self::N - Self::F) + Self::MIN_GAP_SIZE {
+    if offset < Self::MIN_OFFSET {
       return (0, Some(offset));
     }
     for v in io[offset - (Self::N - Self::F)..offset].iter_mut() {
