@@ -11,7 +11,7 @@ use crate::{LzssError, Read, Write};
 /// * `EJ` - The number of bits in the length, usually `4..5`
 /// * `C` - The initial fill byte of the buffer, usually `0x20` (space)
 /// * `N` - Equals `1 << EI`, the size of the buffer for [Lzss::decompress()]
-/// * `N2` - Equals `2 * N`, the size of the buffer for [Lzss::compress()]
+/// * `N2` - Equals `2 << EI` (`N * 2`), the size of the buffer for [Lzss::compress()]
 ///
 /// # Restrictions
 /// * `EJ` must be larger than `0`
@@ -19,7 +19,7 @@ use crate::{LzssError, Read, Write};
 /// * `EI + EJ` must be at least 8
 /// * `EI + EJ` must be 24 or less
 /// * `N` must be equal to `1 << EI`
-/// * `N2` must be equal to `2 * N`
+/// * `N2` must be equal to `2 << EI` (`N * 2`)
 ///
 /// # Limitations
 /// Since it's not possible to do const calculations on const generics all parameters
@@ -39,7 +39,7 @@ use crate::{LzssError, Read, Write};
 /// # Example
 /// ```rust
 /// # use lzss::{Lzss, SliceReader, SliceWriterExact};
-/// type MyLzss = Lzss<10, 4, 0x20, 1024, 2048>;
+/// type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
 /// let input = b"Example Data";
 /// let mut output = [0; 14];
 /// let result = MyLzss::compress(
@@ -187,7 +187,7 @@ mod tests {
   use crate::vec::VecWriter;
   use crate::ResultLzssErrorVoidExt;
 
-  type TestLZSS = Lzss<10, 4, 0x20, 1024, 2048>;
+  type TestLZSS = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
 
   const TEST_DATA: &[u8; 27] = b"Sample   Data   11221233123";
   const COMPRESSED_DATA: [u8; 26] = [
