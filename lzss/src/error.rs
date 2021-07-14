@@ -1,4 +1,4 @@
-/// `LzssError` is a type than represents either an read or write error.
+/// This represents either an read or write error.
 #[derive(Debug, Eq, PartialEq)]
 pub enum LzssError<R, W> {
   /// Contains the read error value.

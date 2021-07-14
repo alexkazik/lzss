@@ -34,7 +34,8 @@ It is recommended to add a header based on the requirements.
 This code is based on the [LZSS encoder-decoder by Haruhiko Okumura, public domain](https://oku.edu.mie-u.ac.jp/~okumura/compression/lzss.c).
 
 # Features
-* `std`         - Enables everything marked with `std`.
+* `std`         - Enables everything marked with `std`
+                  and the `Error` instance for `LzssDynError`.
 * `const_panic` - Requires nightly and enables compile-time
                   checks of the parameters for Lzss.
 

@@ -8,7 +8,7 @@ pub trait Read {
   ///
   /// Return `Ok(None)` in case of eof.
   ///
-  /// Please be aware that even after reading an eof it may br tried again
+  /// Please be aware that even after reading an eof it may be tried again
   /// (which then also has to result in an eof).
   fn read(&mut self) -> Result<Option<u8>, Self::Error>;
 }

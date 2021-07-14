@@ -169,6 +169,7 @@ impl core::fmt::Display for LzssDynError {
   }
 }
 
+/// `std` Implementation of [Error](std::error::Error) for [LzssDynError]
 #[cfg(any(doc, test, feature = "std"))]
 impl std::error::Error for LzssDynError {}
 
