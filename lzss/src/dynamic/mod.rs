@@ -86,10 +86,10 @@ impl LzssDyn {
     (1 << self.ej) + self.p()
   }
 
-  /// `std` Compress the input data into the output.
+  /// `alloc/std` Compress the input data into the output.
   ///
   /// The buffer, with `2 * (1 << EI)` bytes, is allocated on the heap.
-  #[cfg(any(doc, test, feature = "std"))]
+  #[cfg(any(doc, test, feature = "alloc"))]
   pub fn compress<R: Read, W: Write>(
     &self,
     mut reader: R,
@@ -115,10 +115,10 @@ impl LzssDyn {
     writer.finish().map_err(LzssError::WriteError)
   }
 
-  /// `std` Decompress the input data into the output.
+  /// `alloc/std` Decompress the input data into the output.
   ///
   /// The buffer, with `1 << EI` bytes, is allocated on the heap.
-  #[cfg(any(doc, test, feature = "std"))]
+  #[cfg(any(doc, test, feature = "alloc"))]
   pub fn decompress<R: Read, W: Write>(
     &self,
     mut reader: R,
