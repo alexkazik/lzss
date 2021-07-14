@@ -42,6 +42,7 @@
 //! the following is required: `C = 0x20` in this library and `P = (1+EI+EJ) / 9` in Okumuras program.
 //!
 //! # Features
+//! * `alloc`       - Enables everything marked with `alloc`.
 //! * `std`         - Enables everything marked with `std`
 //!                   and the [Error](std::error::Error) instance for [LzssError] and [LzssDynError].
 //! * `const_panic` - Requires nightly and enables compile-time
@@ -85,6 +86,10 @@ mod test_readme_md {
   external_doc_test!(include_str!("../README.md"));
 }
 
+#[cfg(feature = "alloc")]
+#[macro_use]
+extern crate alloc;
+
 mod bits;
 mod dynamic;
 mod error;
@@ -93,7 +98,7 @@ mod generic;
 mod io_simple;
 mod read_write;
 mod slice;
-#[cfg(any(doc, test, feature = "std"))]
+#[cfg(any(doc, test, feature = "alloc"))]
 mod vec;
 mod void;
 
@@ -104,7 +109,7 @@ pub use crate::generic::Lzss;
 pub use crate::io_simple::{IOSimpleReader, IOSimpleWriter};
 pub use crate::read_write::{Read, Write};
 pub use crate::slice::{SliceReader, SliceWriteError, SliceWriter, SliceWriterExact};
-#[cfg(any(doc, test, feature = "std"))]
+#[cfg(any(doc, test, feature = "alloc"))]
 pub use crate::vec::VecWriter;
 pub use crate::void::{
   ResultLzssErrorVoidExt, ResultLzssErrorVoidReadExt, ResultLzssErrorVoidWriteExt,

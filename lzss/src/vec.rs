@@ -1,7 +1,8 @@
 use crate::Write;
+use alloc::vec::Vec;
 use void::Void;
 
-/// `std` Write into a vector.
+/// `alloc/std` Write into a vector.
 ///
 /// In order to write into a referenced vector use [IOSimpleWriter](crate::IOSimpleWriter),
 /// and [SliceReader](crate::SliceReader) to read from a vector.
