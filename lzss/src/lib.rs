@@ -42,7 +42,8 @@
 //! the following is required: `C = 0x20` in this library and `P = (1+EI+EJ) / 9` in Okumuras program.
 //!
 //! # Features
-//! * `std`         - Enables everything marked with `std`.
+//! * `std`         - Enables everything marked with `std`
+//!                   and the [Error](std::error::Error) instance for [LzssDynError].
 //! * `const_panic` - Requires nightly and enables compile-time
 //!                   checks of the parameters, see [Lzss].
 //!
