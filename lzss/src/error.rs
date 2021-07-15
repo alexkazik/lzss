@@ -1,3 +1,5 @@
+use core::fmt::Display;
+
 /// This represents either an read or write error.
 #[derive(Debug, Eq, PartialEq)]
 pub enum LzssError<R, W> {
@@ -5,6 +7,31 @@ pub enum LzssError<R, W> {
   ReadError(R),
   /// Contains the write error value.
   WriteError(W),
+}
+
+impl<R: Display, W: Display> core::fmt::Display for LzssError<R, W> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    match self {
+      LzssError::ReadError(error) => write!(f, "Read error: {}", error),
+      LzssError::WriteError(error) => write!(f, "Write error: {}", error),
+    }
+  }
+}
+
+/// `std` Implementation of [Error](std::error::Error) for [LzssError]
+#[cfg(any(doc, test, feature = "std"))]
+impl<R, W> std::error::Error for LzssError<R, W>
+where
+  R: std::error::Error + 'static,
+  W: std::error::Error + 'static,
+{
+  #[inline]
+  fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+    match self {
+      LzssError::ReadError(error) => Some(error),
+      LzssError::WriteError(error) => Some(error),
+    }
+  }
 }
 
 impl<R, W> LzssError<R, W> {
