@@ -43,7 +43,7 @@
 //!
 //! # Features
 //! * `std`         - Enables everything marked with `std`
-//!                   and the [Error](std::error::Error) instance for [LzssDynError].
+//!                   and the [Error](std::error::Error) instance for [LzssError] and [LzssDynError].
 //! * `const_panic` - Requires nightly and enables compile-time
 //!                   checks of the parameters, see [Lzss].
 //!

@@ -35,7 +35,7 @@ This code is based on the [LZSS encoder-decoder by Haruhiko Okumura, public doma
 
 # Features
 * `std`         - Enables everything marked with `std`
-                  and the `Error` instance for `LzssDynError`.
+                  and the `Error` instance for `LzssError` and `LzssDynError`.
 * `const_panic` - Requires nightly and enables compile-time
                   checks of the parameters for Lzss.
 
