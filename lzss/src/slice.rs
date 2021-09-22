@@ -59,7 +59,7 @@ impl core::fmt::Display for SliceWriteError {
   }
 }
 
-#[cfg(any(doc, test, feature = "std"))]
+#[cfg(any(test, feature = "std"))]
 impl std::error::Error for SliceWriteError {}
 
 /// Write into a slice.
