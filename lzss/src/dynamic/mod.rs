@@ -89,7 +89,7 @@ impl LzssDyn {
   /// `alloc/std` Compress the input data into the output.
   ///
   /// The buffer, with `2 * (1 << EI)` bytes, is allocated on the heap.
-  #[cfg(any(doc, test, feature = "alloc"))]
+  #[cfg(any(test, feature = "alloc"))]
   pub fn compress<R: Read, W: Write>(
     &self,
     mut reader: R,
@@ -118,7 +118,7 @@ impl LzssDyn {
   /// `alloc/std` Decompress the input data into the output.
   ///
   /// The buffer, with `1 << EI` bytes, is allocated on the heap.
-  #[cfg(any(doc, test, feature = "alloc"))]
+  #[cfg(any(test, feature = "alloc"))]
   pub fn decompress<R: Read, W: Write>(
     &self,
     mut reader: R,
@@ -170,7 +170,7 @@ impl core::fmt::Display for LzssDynError {
 }
 
 /// `std` Implementation of [Error](std::error::Error) for [LzssDynError]
-#[cfg(any(doc, test, feature = "std"))]
+#[cfg(any(test, feature = "std"))]
 impl std::error::Error for LzssDynError {}
 
 #[cfg(test)]

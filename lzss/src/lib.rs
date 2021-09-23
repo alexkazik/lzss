@@ -1,4 +1,4 @@
-#![cfg_attr(not(any(doc, test, feature = "std")), no_std)]
+#![cfg_attr(not(any(test, feature = "std")), no_std)]
 #![cfg_attr(feature = "const_panic", feature(const_panic))]
 // Allow many single char names, this is done to copy the original code as close as possible.
 #![allow(clippy::many_single_char_names)]
@@ -94,22 +94,22 @@ mod bits;
 mod dynamic;
 mod error;
 mod generic;
-#[cfg(any(doc, test, feature = "std"))]
+#[cfg(any(test, feature = "std"))]
 mod io_simple;
 mod read_write;
 mod slice;
-#[cfg(any(doc, test, feature = "alloc"))]
+#[cfg(any(test, feature = "alloc"))]
 mod vec;
 mod void;
 
 pub use crate::dynamic::{LzssDyn, LzssDynError};
 pub use crate::error::LzssError;
 pub use crate::generic::Lzss;
-#[cfg(any(doc, test, feature = "std"))]
+#[cfg(any(test, feature = "std"))]
 pub use crate::io_simple::{IOSimpleReader, IOSimpleWriter};
 pub use crate::read_write::{Read, Write};
 pub use crate::slice::{SliceReader, SliceWriteError, SliceWriter, SliceWriterExact};
-#[cfg(any(doc, test, feature = "alloc"))]
+#[cfg(any(test, feature = "alloc"))]
 pub use crate::vec::VecWriter;
 pub use crate::void::{
   ResultLzssErrorVoidExt, ResultLzssErrorVoidReadExt, ResultLzssErrorVoidWriteExt,
