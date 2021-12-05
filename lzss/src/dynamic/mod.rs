@@ -6,7 +6,7 @@ mod decompress;
 /// Dynamic parameters for de-/compression (see [Lzss](crate::Lzss) for compile-time parameters).
 ///
 /// # Parameters
-/// * `ei` - The number of bits in the offset, usualy `10..13`
+/// * `ei` - The number of bits in the offset, usually `10..13`
 /// * `ej` - The number of bits in the length, usually `4..5`
 /// * `c` - The initial fill byte of the buffer, usually `0x20` (space)
 ///
