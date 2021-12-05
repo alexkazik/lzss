@@ -2,14 +2,7 @@
 
 use crate::generic::Lzss;
 
-impl<
-    const EI: usize,
-    const EJ: usize,
-    const C: u8,
-    const UNSAFE_N: usize,
-    const UNSAFE_N2: usize,
-  > Lzss<EI, EJ, C, UNSAFE_N, UNSAFE_N2>
-{
+impl<const EI: usize, const EJ: usize, const C: u8> Lzss<EI, EJ, C> {
   #[inline(always)]
   pub(crate) fn compress_in_place_internal(io: &mut [u8], offset: usize) -> (usize, Option<usize>) {
     if offset >= io.len() {

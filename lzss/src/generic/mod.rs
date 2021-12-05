@@ -10,29 +10,21 @@ use crate::{LzssError, Read, Write};
 /// * `EI` - The number of bits in the offset, usually `10..13`
 /// * `EJ` - The number of bits in the length, usually `4..5`
 /// * `C` - The initial fill byte of the buffer, usually `0x20` (space)
-/// * `N` - Equals `1 << EI`, the size of the buffer for [Lzss::decompress()]
-/// * `N2` - Equals `2 << EI` (`N * 2`), the size of the buffer for [Lzss::compress()]
 ///
 /// # Restrictions
 /// * `EJ` must be larger than `0`
 /// * `EI` must be larger than `EJ`
 /// * `EI + EJ` must be at least 8
 /// * `EI + EJ` must be 24 or less
-/// * `N` must be equal to `1 << EI`
-/// * `N2` must be equal to `2 << EI` (`N * 2`)
 ///
 /// All parameters are checked at compile-time.
 ///
 /// There is no runtime overhead since everything is checked during compile-time.
 ///
-/// # Limitations
-/// Since it's not possible to do const calculations on const generics all parameters
-/// have to be set.
-///
 /// # Example
 /// ```rust
 /// # use lzss::{Lzss, SliceReader, SliceWriterExact};
-/// type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
+/// type MyLzss = Lzss<10, 4, 0x20>;
 /// let input = b"Example Data";
 /// let mut output = [0; 14];
 /// let result = MyLzss::compress(
@@ -42,7 +34,7 @@ use crate::{LzssError, Read, Write};
 /// assert!(result.is_ok()); // the output is exactly 14 bytes long
 /// ```
 
-pub struct Lzss<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>(());
+pub struct Lzss<const EI: usize, const EJ: usize, const C: u8>(());
 
 macro_rules! assert_parameters {
   () => {
@@ -58,43 +50,39 @@ macro_rules! assert_parameters {
     if EI + EJ > 24 {
       panic!("LZSS: Invalid EI, EJ, both together must be 24 or less")
     }
-    // the conversion to u32 is for the check to work on 16-bit systems
-    if (N as u32) != (1u32 << EI) {
-      panic!("LZSS: Invalid N, must be exactly 1<<EI")
-    }
-    // the conversion to u32 is for the check to work on 16-bit systems
-    if (N2 as u32) != 2 * (N as u32) {
-      panic!("LZSS: Invalid N2, must be exactly 2*N")
-    }
   };
 }
 
-impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
-  Lzss<EI, EJ, C, N, N2>
-{
+impl<const EI: usize, const EJ: usize, const C: u8> Lzss<EI, EJ, C> {
   /// Compress the input data into the output.
   ///
-  /// The buffer, with `N2` bytes, is allocated on the stack.
+  /// The buffer, with `2 << EI` bytes, is allocated on the stack.
   pub fn compress<R: Read, W: Write>(
     mut reader: R,
     mut writer: W,
-  ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    let mut buffer = [C; N2];
+  ) -> Result<W::Output, LzssError<R::Error, W::Error>>
+  where
+    [(); 2 << EI]:,
+  {
+    let mut buffer = [C; 2 << EI];
     Self::compress_internal(&mut reader, &mut writer, &mut buffer)?;
     writer.finish().map_err(LzssError::WriteError)
   }
 
   /// `alloc/std` Compress the input data into the output.
   ///
-  /// The buffer, with `N2` bytes, is allocated on the heap.
+  /// The buffer, with `2<<EI` bytes, is allocated on the heap.
   #[cfg(feature = "alloc")]
   pub fn compress_heap<R: Read, W: Write>(
     mut reader: R,
     mut writer: W,
-  ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    let mut buffer = vec![C; N2];
+  ) -> Result<W::Output, LzssError<R::Error, W::Error>>
+  where
+    [(); 2 << EI]:,
+  {
+    let mut buffer = vec![C; 2 << EI];
     Self::compress_internal(&mut reader, &mut writer, unsafe {
-      &mut *(buffer.as_mut_ptr() as *mut [u8; N2])
+      &mut *(buffer.as_mut_ptr() as *mut [u8; 2 << EI])
     })?;
     writer.finish().map_err(LzssError::WriteError)
   }
@@ -103,7 +91,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
   pub fn compress_with_buffer<R: Read, W: Write>(
     mut reader: R,
     mut writer: W,
-    buffer: &mut [u8; N2],
+    buffer: &mut [u8; 2 << EI],
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
     unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), C, Self::N - Self::F) };
     Self::compress_internal(&mut reader, &mut writer, buffer)?;
@@ -112,27 +100,33 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
 
   /// Decompress the input data into the output.
   ///
-  /// The buffer, with `N` bytes, is allocated on the stack.
+  /// The buffer, with `1 << EI` bytes, is allocated on the stack.
   pub fn decompress<R: Read, W: Write>(
     mut reader: R,
     mut writer: W,
-  ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    let mut buffer: [u8; N] = [C; N];
+  ) -> Result<W::Output, LzssError<R::Error, W::Error>>
+  where
+    [(); 1 << EI]:,
+  {
+    let mut buffer: [u8; 1 << EI] = [C; 1 << EI];
     Self::decompress_internal(&mut reader, &mut writer, &mut buffer)?;
     writer.finish().map_err(LzssError::WriteError)
   }
 
   /// `alloc/std` Decompress the input data into the output.
   ///
-  /// The buffer, with `N` bytes, is allocated on the heap.
+  /// The buffer, with `1 << EI` bytes, is allocated on the heap.
   #[cfg(feature = "alloc")]
   pub fn decompress_heap<R: Read, W: Write>(
     mut reader: R,
     mut writer: W,
-  ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    let mut buffer = vec![C; N];
+  ) -> Result<W::Output, LzssError<R::Error, W::Error>>
+  where
+    [(); 1 << EI]:,
+  {
+    let mut buffer = vec![C; 1 << EI];
     Self::decompress_internal(&mut reader, &mut writer, unsafe {
-      &mut *(buffer.as_mut_ptr() as *mut [u8; N])
+      &mut *(buffer.as_mut_ptr() as *mut [u8; 1 << EI])
     })?;
     writer.finish().map_err(LzssError::WriteError)
   }
@@ -141,7 +135,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
   pub fn decompress_with_buffer<R: Read, W: Write>(
     mut reader: R,
     mut writer: W,
-    buffer: &mut [u8; N],
+    buffer: &mut [u8; 1 << EI],
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
     unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), C, Self::N) };
     Self::decompress_internal(&mut reader, &mut writer, buffer)?;
@@ -149,9 +143,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
   }
 }
 
-impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
-  Lzss<EI, EJ, C, N, N2>
-{
+impl<const EI: usize, const EJ: usize, const C: u8> Lzss<EI, EJ, C> {
   /// Compress, the input and output is in the same slice.
   ///
   /// The input is located at `io[offset..]`.
@@ -172,13 +164,11 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
 
   /// The minimal offset when using `compress_in_place`.
   ///
-  /// It's a little less than `N`.
+  /// It's a little less than `1 << EI`.
   pub const MIN_OFFSET: usize = (Self::N - Self::F) + Self::MIN_GAP_SIZE;
 }
 
-impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
-  Lzss<EI, EJ, C, N, N2>
-{
+impl<const EI: usize, const EJ: usize, const C: u8> Lzss<EI, EJ, C> {
   pub(crate) const N: usize = {
     assert_parameters!();
     1 << EI
@@ -195,7 +185,7 @@ mod tests {
   use crate::vec::VecWriter;
   use crate::ResultLzssErrorVoidExt;
 
-  type TestLZSS = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
+  type TestLZSS = Lzss<10, 4, 0x20>;
 
   const TEST_DATA: &[u8; 27] = b"Sample   Data   11221233123";
   const COMPRESSED_DATA: [u8; 26] = [

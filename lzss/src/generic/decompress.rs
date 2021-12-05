@@ -5,19 +5,12 @@ use crate::generic::Lzss;
 use crate::read_write::{Read, Write};
 use crate::LzssError;
 
-impl<
-    const EI: usize,
-    const EJ: usize,
-    const C: u8,
-    const UNSAFE_N: usize,
-    const UNSAFE_N2: usize,
-  > Lzss<EI, EJ, C, UNSAFE_N, UNSAFE_N2>
-{
+impl<const EI: usize, const EJ: usize, const C: u8> Lzss<EI, EJ, C> {
   #[inline(always)]
   pub(crate) fn decompress_internal<R: Read, W: Write>(
     reader: &mut R,
     writer: &mut W,
-    buffer: &mut [u8; UNSAFE_N],
+    buffer: &mut [u8; 1 << EI],
   ) -> Result<(), LzssError<R::Error, W::Error>> {
     let mut bit_reader = BitReader::new(reader);
 

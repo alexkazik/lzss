@@ -1,3 +1,5 @@
+#![allow(incomplete_features)]
+#![feature(generic_const_exprs)]
 #![cfg_attr(not(any(test, feature = "std")), no_std)]
 // Allow many single char names, this is done to copy the original code as close as possible.
 #![allow(clippy::many_single_char_names)]
@@ -61,7 +63,7 @@
 //! # Example
 //! ```rust
 //! # use lzss::{Lzss, SliceReader, SliceWriter};
-//! type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
+//! type MyLzss = Lzss<10, 4, 0x20>;
 //! let input = b"Example Data";
 //! let mut output = [0; 30];
 //! let result = MyLzss::compress(
