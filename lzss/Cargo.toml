@@ -2,7 +2,7 @@
 name = "lzss"
 version = "0.8.2"
 authors = ["ALeX Kazik <alex@kazik.de>"]
-edition = "2018"
+edition = "2021"
 description = "A LZSS en-/decompressor (lossless data compression, no_std capable, in pure Rust)"
 repository = "https://github.com/alexkazik/lzss"
 license = "MIT"
