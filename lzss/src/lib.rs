@@ -1,5 +1,4 @@
 #![cfg_attr(not(any(test, feature = "std")), no_std)]
-#![cfg_attr(feature = "const_panic", feature(const_panic))]
 // Allow many single char names, this is done to copy the original code as close as possible.
 #![allow(clippy::many_single_char_names)]
 #![warn(missing_docs)]
@@ -45,8 +44,6 @@
 //! * `alloc`       - Enables everything marked with `alloc`.
 //! * `std`         - Enables everything marked with `std`
 //!                   and the [Error](std::error::Error) instance for [LzssError] and [LzssDynError].
-//! * `const_panic` - Requires nightly and enables compile-time
-//!                   checks of the parameters, see [Lzss].
 //!
 //! ## Usage
 //! With std:

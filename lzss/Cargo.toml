@@ -14,6 +14,5 @@ void = { version = "1.0.2", default-features = false }
 
 [features]
 default = ['std']
-const_panic = []
 alloc = []
 std = ['void/std', 'alloc']

@@ -12,8 +12,6 @@ impl<
 {
   #[inline(always)]
   pub(crate) fn compress_in_place_internal(io: &mut [u8], offset: usize) -> (usize, Option<usize>) {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
     if offset >= io.len() {
       return (0, None);
     }

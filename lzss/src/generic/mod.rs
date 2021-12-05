@@ -21,20 +21,13 @@ use crate::{LzssError, Read, Write};
 /// * `N` must be equal to `1 << EI`
 /// * `N2` must be equal to `2 << EI` (`N * 2`)
 ///
-/// # Limitations
-/// Since it's not possible to do const calculations on const generics all parameters
-/// have to be set.
-///
-/// ## With feature `const_panic`
 /// All parameters are checked at compile-time.
 ///
 /// There is no runtime overhead since everything is checked during compile-time.
 ///
-/// ## Without feature `const_panic`
-/// All parameters are checked at runtime.
-///
-/// There should be no runtime overhead since the compiler will replace the funtion
-/// with a panic if there is a problem. You just won't notice that during compilation.
+/// # Limitations
+/// Since it's not possible to do const calculations on const generics all parameters
+/// have to be set.
 ///
 /// # Example
 /// ```rust
@@ -86,8 +79,6 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut reader: R,
     mut writer: W,
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
     let mut buffer = [C; N2];
     Self::compress_internal(&mut reader, &mut writer, &mut buffer)?;
     writer.finish().map_err(LzssError::WriteError)
@@ -101,8 +92,6 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut reader: R,
     mut writer: W,
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
     let mut buffer = vec![C; N2];
     Self::compress_internal(&mut reader, &mut writer, unsafe {
       &mut *(buffer.as_mut_ptr() as *mut [u8; N2])
@@ -116,8 +105,6 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut writer: W,
     buffer: &mut [u8; N2],
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
     unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), C, Self::N - Self::F) };
     Self::compress_internal(&mut reader, &mut writer, buffer)?;
     writer.finish().map_err(LzssError::WriteError)
@@ -130,8 +117,6 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut reader: R,
     mut writer: W,
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
     let mut buffer: [u8; N] = [C; N];
     Self::decompress_internal(&mut reader, &mut writer, &mut buffer)?;
     writer.finish().map_err(LzssError::WriteError)
@@ -145,8 +130,6 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut reader: R,
     mut writer: W,
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
     let mut buffer = vec![C; N];
     Self::decompress_internal(&mut reader, &mut writer, unsafe {
       &mut *(buffer.as_mut_ptr() as *mut [u8; N])
@@ -160,8 +143,6 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut writer: W,
     buffer: &mut [u8; N],
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
     unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), C, Self::N) };
     Self::decompress_internal(&mut reader, &mut writer, buffer)?;
     writer.finish().map_err(LzssError::WriteError)
@@ -199,19 +180,12 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
   Lzss<EI, EJ, C, N, N2>
 {
   pub(crate) const N: usize = {
-    #[cfg(feature = "const_panic")]
     assert_parameters!();
     1 << EI
   };
   pub(crate) const P: usize = (1 + EI + EJ) / 9; /* If match length <= P then output one character */
   pub(crate) const F: usize = (1 << EJ) + Self::P; /* lookahead buffer size */
   pub(crate) const MIN_GAP_SIZE: usize = Self::P + 4;
-
-  #[cfg(not(feature = "const_panic"))]
-  #[inline(always)]
-  pub(crate) fn assert_parameters() {
-    assert_parameters!();
-  }
 }
 
 #[cfg(test)]
