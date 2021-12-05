@@ -1,5 +1,4 @@
 #![cfg_attr(not(any(test, feature = "std")), no_std)]
-#![cfg_attr(feature = "const_panic", feature(const_panic))]
 #![warn(missing_docs)]
 #![warn(clippy::pedantic)]
 #![allow(clippy::cast_possible_truncation)]
@@ -53,8 +52,6 @@
 //! * `alloc`       - Allows de-/compression with buffer on the heap and the [`VecWriter`](crate::VecWriter).
 //! * `std`         - Enables `alloc` and additional [`IOSimpleReader`](crate::IOSimpleReader), [`IOSimpleWriter`](crate::IOSimpleWriter),
 //!                   and the [`Error`](::std::error::Error) instance for [`LzssError`](crate::LzssError) and [`LzssDynError`](crate::LzssDynError).
-//! * `const_panic` - Requires nightly and enables compile-time
-//!                   checks of the parameters, see [`Lzss`](crate::Lzss).
 //!
 //! ## Usage
 //! With `std`:

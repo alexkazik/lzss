@@ -49,8 +49,6 @@ the following is required: `C = 0x20` in this library and `P = (1+EI+EJ) / 9` in
 * `alloc`       - Allows de-/compression with buffer on the heap and the `VecWriter`.
 * `std`         - Enables `alloc` and additional `IOSimpleReader`, `IOSimpleWriter`,
                   and the `Error` instance for `LzssError` and `LzssDynError`.
-* `const_panic` - Requires nightly and enables compile-time
-                  checks of the parameters, see `Lzss`.
 
 ### Usage
 With `std`:

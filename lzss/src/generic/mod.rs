@@ -21,20 +21,13 @@ use crate::{LzssError, Read, Write};
 /// * `N` must be equal to `1 << EI`
 /// * `N2` must be equal to `2 << EI` (`N * 2`)
 ///
-/// # Limitations
-/// Since it's not possible to do const calculations on const generics all parameters
-/// have to be set.
-///
-/// ## With feature `const_panic`
 /// All parameters are checked at compile-time.
 ///
 /// There is no runtime overhead since everything is checked during compile-time.
 ///
-/// ## Without feature `const_panic`
-/// All parameters are checked at runtime.
-///
-/// There should be no runtime overhead since the compiler will replace the funtion
-/// with a panic if there is a problem. You just won't notice that during compilation.
+/// # Limitations
+/// Since it's not possible to do const calculations on const generics all parameters
+/// have to be set.
 ///
 /// # Example
 /// ```rust
@@ -51,31 +44,6 @@ use crate::{LzssError, Read, Write};
 
 pub struct Lzss<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>(());
 
-macro_rules! assert_parameters {
-  () => {
-    if EJ == 0 {
-      panic!("LZSS: Invalid EJ, must be larger than 0")
-    }
-    if EJ >= EI {
-      panic!("LZSS: Invalid EI, must be larger than EJ")
-    }
-    if EI + EJ < 8 {
-      panic!("LZSS: Invalid EI, EJ, both together must be 8 or more")
-    }
-    if EI + EJ > 24 {
-      panic!("LZSS: Invalid EI, EJ, both together must be 24 or less")
-    }
-    // the conversion to u32 is for the check to work on 16-bit systems
-    if (N as u32) != (1u32 << EI) {
-      panic!("LZSS: Invalid N, must be exactly 1<<EI")
-    }
-    // the conversion to u32 is for the check to work on 16-bit systems
-    if (N2 as u32) != 2 * (N as u32) {
-      panic!("LZSS: Invalid N2, must be exactly 2*N")
-    }
-  };
-}
-
 impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
   Lzss<EI, EJ, C, N, N2>
 {
@@ -86,8 +54,8 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut reader: R,
     mut writer: W,
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
+    let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+
     let mut buffer = [C; N2];
     Self::compress_internal(&mut reader, &mut writer, &mut buffer)?;
     writer.finish().map_err(LzssError::WriteError)
@@ -101,8 +69,8 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut reader: R,
     mut writer: W,
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
+    let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+
     let mut buffer = vec![C; N2];
     Self::compress_internal(&mut reader, &mut writer, unsafe {
       &mut *(buffer.as_mut_ptr().cast::<[u8; N2]>())
@@ -116,9 +84,9 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut writer: W,
     buffer: &mut [u8; N2],
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
-    unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), C, Self::N - Self::F) };
+    let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+
+    unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), C, N - Self::F) };
     Self::compress_internal(&mut reader, &mut writer, buffer)?;
     writer.finish().map_err(LzssError::WriteError)
   }
@@ -130,8 +98,8 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut reader: R,
     mut writer: W,
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
+    let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+
     let mut buffer: [u8; N] = [C; N];
     Self::decompress_internal(&mut reader, &mut writer, &mut buffer)?;
     writer.finish().map_err(LzssError::WriteError)
@@ -145,8 +113,8 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut reader: R,
     mut writer: W,
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
+    let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+
     let mut buffer = vec![C; N];
     Self::decompress_internal(&mut reader, &mut writer, unsafe {
       &mut *(buffer.as_mut_ptr().cast::<[u8; N]>())
@@ -160,9 +128,9 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     mut writer: W,
     buffer: &mut [u8; N],
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-    #[cfg(not(feature = "const_panic"))]
-    Self::assert_parameters();
-    unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), C, Self::N) };
+    let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+
+    unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), C, N) };
     Self::decompress_internal(&mut reader, &mut writer, buffer)?;
     writer.finish().map_err(LzssError::WriteError)
   }
@@ -186,32 +154,47 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
   /// The minimum offset is [`Lzss::MIN_OFFSET`], though if the offset is `Lzss::MIN_OFFSET + input_size/8`
   /// then the compression can't fail.
   pub fn compress_in_place(io: &mut [u8], offset: usize) -> (usize, Option<usize>) {
+    let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+
     Self::compress_in_place_internal(io, offset)
   }
 
   /// The minimal offset when using `compress_in_place`.
   ///
   /// It's a little less than `N`.
-  pub const MIN_OFFSET: usize = (Self::N - Self::F) + Self::MIN_GAP_SIZE;
+  pub const MIN_OFFSET: usize = (N - Self::F) + Self::MIN_GAP_SIZE;
 }
 
 impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
   Lzss<EI, EJ, C, N, N2>
 {
-  pub(crate) const N: usize = {
-    #[cfg(feature = "const_panic")]
-    assert_parameters!();
-    1 << EI
-  };
   pub(crate) const P: usize = (1 + EI + EJ) / 9; /* If match length <= P then output one character */
   pub(crate) const F: usize = (1 << EJ) + Self::P; /* lookahead buffer size */
   pub(crate) const MIN_GAP_SIZE: usize = Self::P + 4;
 
-  #[cfg(not(feature = "const_panic"))]
-  #[inline(always)]
-  pub(crate) fn assert_parameters() {
-    assert_parameters!();
-  }
+  const ASSERT_PARAMETERS: Result<(), ()> = {
+    if EJ == 0 {
+      panic!("LZSS: Invalid EJ, must be larger than 0")
+    }
+    if EJ >= EI {
+      panic!("LZSS: Invalid EI, must be larger than EJ")
+    }
+    if EI + EJ < 8 {
+      panic!("LZSS: Invalid EI, EJ, both together must be 8 or more")
+    }
+    if EI + EJ > 24 {
+      panic!("LZSS: Invalid EI, EJ, both together must be 24 or less")
+    }
+    // the conversion to u32 is for the check to work on 16-bit systems
+    if (N as u32) != (1u32 << EI) {
+      panic!("LZSS: Invalid N, must be exactly 1<<EI")
+    }
+    // the conversion to u32 is for the check to work on 16-bit systems
+    if (N2 as u32) != 2 * (N as u32) {
+      panic!("LZSS: Invalid N2, must be exactly 2*N")
+    }
+    Ok(())
+  };
 }
 
 #[cfg(test)]
