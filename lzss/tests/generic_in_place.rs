@@ -1,7 +1,7 @@
-mod common;
-
 use common::{EXAMPLE_DATA, INIT_BYTE};
 use lzss::{Lzss, ResultLzssErrorVoidReadExt, SliceReader, SliceWriter};
+
+mod common;
 
 #[test]
 fn compress_in_place() {

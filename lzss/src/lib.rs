@@ -83,18 +83,6 @@
 #[macro_use]
 extern crate alloc;
 
-mod bits;
-mod dynamic;
-mod error;
-mod generic;
-#[cfg(any(test, feature = "std"))]
-mod io_simple;
-mod read_write;
-mod slice;
-#[cfg(any(test, feature = "alloc"))]
-mod vec;
-mod void;
-
 pub use crate::dynamic::{LzssDyn, LzssDynError};
 pub use crate::error::LzssError;
 pub use crate::generic::Lzss;
@@ -107,3 +95,15 @@ pub use crate::vec::VecWriter;
 pub use crate::void::{
   ResultLzssErrorVoidExt, ResultLzssErrorVoidReadExt, ResultLzssErrorVoidWriteExt,
 };
+
+mod bits;
+mod dynamic;
+mod error;
+mod generic;
+#[cfg(any(test, feature = "std"))]
+mod io_simple;
+mod read_write;
+mod slice;
+#[cfg(any(test, feature = "alloc"))]
+mod vec;
+mod void;

@@ -1,7 +1,7 @@
-mod common;
-
 use common::{EXAMPLE_DATA, INIT_BYTE};
 use lzss::{LzssDyn, ResultLzssErrorVoidExt, SliceReader, VecWriter};
+
+mod common;
 
 fn combinations() -> Vec<(usize, usize, bool)> {
   let mut result = Vec::new();

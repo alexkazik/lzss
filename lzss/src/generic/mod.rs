@@ -1,8 +1,8 @@
+use crate::{LzssError, Read, Write};
+
 mod compress;
 mod compress_in_place;
 mod decompress;
-
-use crate::{LzssError, Read, Write};
 
 /// A zero-sized type, the const generics specify the parameters of the compression.
 ///

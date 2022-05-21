@@ -1,7 +1,7 @@
-mod common;
-
 use common::{EXAMPLE_DATA, INIT_BYTE};
 use lzss::{Lzss, LzssDyn, ResultLzssErrorVoidExt, SliceReader, VecWriter};
+
+mod common;
 
 macro_rules! test_generic {
   ($name:ident, $ei:expr, $ej:expr) => {
