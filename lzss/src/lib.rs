@@ -51,6 +51,7 @@
 //!
 //! # Features
 //! * `alloc`       - Allows de-/compression with buffer on the heap and the [`VecWriter`](crate::VecWriter).
+//! * `safe`        - Only use safe code (`forbid(unsafe_code)`).
 //! * `std`         - Enables `alloc` and additional [`IOSimpleReader`](crate::IOSimpleReader), [`IOSimpleWriter`](crate::IOSimpleWriter),
 //!                   and the [`Error`](::std::error::Error) instance for [`LzssError`](crate::LzssError) and [`LzssDynError`](crate::LzssDynError).
 //!
@@ -104,6 +105,7 @@ mod generic;
 #[cfg(any(test, feature = "std"))]
 mod io_simple;
 mod read_write;
+#[cfg_attr(feature = "safe", path = "slice_safe.rs")]
 mod slice;
 #[cfg(any(test, feature = "alloc"))]
 mod vec;

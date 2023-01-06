@@ -47,6 +47,7 @@ the following is required: `C = 0x20` in this library and `P = (1+EI+EJ) / 9` in
 
 ## Features
 * `alloc`       - Allows de-/compression with buffer on the heap and the `VecWriter`.
+* `safe`        - Only use safe code (`forbid(unsafe_code)`).
 * `std`         - Enables `alloc` and additional `IOSimpleReader`, `IOSimpleWriter`,
                   and the `Error` instance for `LzssError` and `LzssDynError`.
 
