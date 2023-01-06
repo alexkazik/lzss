@@ -26,7 +26,7 @@ impl<
       if let Some(inp) = bit_reader.read_bits(9).map_err(LzssError::ReadError)? {
         if (inp & 0x100) != 0 {
           writer.write(inp as u8).map_err(LzssError::WriteError)?;
-          *unsafe { buffer.get_unchecked_mut(r) } = inp as u8;
+          buffer[r] = inp as u8;
           r = (r + 1) & (Self::N - 1);
         } else if let Some(inp2) = bit_reader
           .read_bits(EI + EJ - 8)
@@ -36,9 +36,9 @@ impl<
           let i = (inp >> EJ) as usize;
           let j = (inp & ((1 << EJ) - 1)) as usize;
           for k in 0..=j + Self::P {
-            let b = *unsafe { buffer.get_unchecked((i + k) & (Self::N - 1)) };
+            let b = buffer[(i + k) & (Self::N - 1)];
             writer.write(b).map_err(LzssError::WriteError)?;
-            *unsafe { buffer.get_unchecked_mut(r) } = b;
+            buffer[r] = b;
             r = (r + 1) & (Self::N - 1);
           }
         } else {
