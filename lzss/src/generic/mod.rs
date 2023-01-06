@@ -3,6 +3,7 @@ mod compress_in_place;
 mod decompress;
 
 use crate::{LzssError, Read, Write};
+use core::convert::TryInto;
 
 /// A zero-sized type, the const generics specify the parameters of the compression.
 ///
@@ -104,9 +105,8 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     #[cfg(not(feature = "const_panic"))]
     Self::assert_parameters();
     let mut buffer = vec![C; N2];
-    Self::compress_internal(&mut reader, &mut writer, unsafe {
-      &mut *(buffer.as_mut_ptr() as *mut [u8; N2])
-    })?;
+    let buffer: &mut [u8; N2] = (&mut buffer[..]).try_into().unwrap();
+    Self::compress_internal(&mut reader, &mut writer, buffer)?;
     writer.finish().map_err(LzssError::WriteError)
   }
 
@@ -118,7 +118,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
     #[cfg(not(feature = "const_panic"))]
     Self::assert_parameters();
-    unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), C, Self::N - Self::F) };
+    buffer[..Self::N - Self::F].fill(C);
     Self::compress_internal(&mut reader, &mut writer, buffer)?;
     writer.finish().map_err(LzssError::WriteError)
   }
@@ -148,9 +148,8 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     #[cfg(not(feature = "const_panic"))]
     Self::assert_parameters();
     let mut buffer = vec![C; N];
-    Self::decompress_internal(&mut reader, &mut writer, unsafe {
-      &mut *(buffer.as_mut_ptr() as *mut [u8; N])
-    })?;
+    let buffer: &mut [u8; N] = (&mut buffer[..]).try_into().unwrap();
+    Self::decompress_internal(&mut reader, &mut writer, buffer)?;
     writer.finish().map_err(LzssError::WriteError)
   }
 
@@ -162,7 +161,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
     #[cfg(not(feature = "const_panic"))]
     Self::assert_parameters();
-    unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), C, Self::N) };
+    buffer[..Self::N].fill(C);
     Self::decompress_internal(&mut reader, &mut writer, buffer)?;
     writer.finish().map_err(LzssError::WriteError)
   }
