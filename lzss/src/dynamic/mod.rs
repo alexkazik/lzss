@@ -116,7 +116,7 @@ impl LzssDyn {
     buffer: &mut [u8],
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
     assert!(buffer.len() >= 2 * self.n());
-    unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), self.c, self.n() - self.f()) };
+    buffer[..self.n() - self.f()].fill(self.c);
     self.compress_internal(&mut reader, &mut writer, buffer)?;
     writer.finish().map_err(LzssError::WriteError)
   }
@@ -145,7 +145,7 @@ impl LzssDyn {
     buffer: &mut [u8],
   ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
     assert!(buffer.len() >= self.n());
-    unsafe { ::core::ptr::write_bytes(buffer.as_mut_ptr(), self.c, self.n()) };
+    buffer[..self.n()].fill(self.c);
     self.decompress_internal(&mut reader, &mut writer, buffer)?;
     writer.finish().map_err(LzssError::WriteError)
   }

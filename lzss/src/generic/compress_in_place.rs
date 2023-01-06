@@ -17,9 +17,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     if offset < Self::MIN_OFFSET {
       return (0, Some(offset));
     }
-    for v in io[offset - (N - Self::F)..offset].iter_mut() {
-      *v = C;
-    }
+    io[offset - (N - Self::F)..offset].fill(C);
     let mut out_buf = 0;
     let mut out_len = 0;
     let mut out_ptr = 0;
