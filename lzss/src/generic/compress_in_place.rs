@@ -20,9 +20,9 @@ impl<
     if offset < Self::MIN_OFFSET {
       return (0, Some(offset));
     }
-    for v in io[offset - (Self::N - Self::F)..offset].iter_mut() {
-      *v = C;
-    }
+
+    io[offset - (Self::N - Self::F)..offset].fill(C);
+
     let mut out_buf = 0;
     let mut out_len = 0;
     let mut out_ptr = 0;
@@ -32,14 +32,14 @@ impl<
 
     while r < io.len() {
       let f1 = Self::F.min(io.len() - r);
-      let c = *unsafe { io.get_unchecked(r) };
+      let c = io[r];
       let mut x = 0;
       let mut y = 1;
-      for i in (s..r).rev() {
-        if *unsafe { io.get_unchecked(i) } == c {
+      for (i, &ci) in (s..r).zip(&io[s..r]).rev() {
+        if ci == c {
           let mut j = 1;
           while j < f1 {
-            if *unsafe { io.get_unchecked(i + j) } != *unsafe { io.get_unchecked(r + j) } {
+            if io[i + j] != io[r + j] {
               break;
             }
             j += 1;
@@ -62,7 +62,7 @@ impl<
       }
       while out_len > 8 {
         out_len -= 8;
-        *unsafe { io.get_unchecked_mut(out_ptr) } = (out_buf >> out_len) as u8;
+        io[out_ptr] = (out_buf >> out_len) as u8;
         out_ptr += 1;
       }
 
@@ -71,7 +71,7 @@ impl<
 
       if out_ptr + Self::MIN_GAP_SIZE > s {
         if out_len > 0 {
-          *unsafe { io.get_unchecked_mut(out_ptr) } = (out_buf << (8 - out_len)) as u8;
+          io[out_ptr] = (out_buf << (8 - out_len)) as u8;
           out_ptr += 1;
         }
         return (out_ptr, Some(r));
@@ -79,7 +79,7 @@ impl<
     }
 
     if out_len > 0 {
-      *unsafe { io.get_unchecked_mut(out_ptr) } = (out_buf << (8 - out_len)) as u8;
+      io[out_ptr] = (out_buf << (8 - out_len)) as u8;
       out_ptr += 1;
     }
     (out_ptr, None)
