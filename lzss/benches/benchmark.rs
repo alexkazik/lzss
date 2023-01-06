@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion, BatchSize};
-use lzss::{Lzss, VecWriter, SliceReader, ResultLzssErrorVoidExt};
+use lzss::{Lzss, VecWriter, SliceReader, ResultLzssErrorVoidExt, LzssDyn};
 
 pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("encompress heap example", |b| b.iter_batched(
@@ -31,6 +31,34 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         },
         |(r, w)| {
             MyLzss::decompress_heap(SliceReader::new(&r), w).void_unwrap()
+        },
+        BatchSize::SmallInput,
+    ));
+    c.bench_function("encompress dyn heap example", |b| b.iter_batched(
+        || (
+            SliceReader::new(EXAMPLE_DATA),
+            VecWriter::with_capacity(EXAMPLE_DATA.len()),
+            LzssDyn::new(EI, EJ, 0x20).unwrap(),
+        ),
+        |(r, w, lzss)| {
+            lzss.compress(r, w).void_unwrap()
+        },
+        BatchSize::SmallInput,
+    ));
+    c.bench_function("decompress dyn heap example", |b| b.iter_batched(
+        || {
+            let compressed = MyLzss::compress_heap(
+                SliceReader::new(EXAMPLE_DATA),
+                VecWriter::with_capacity(EXAMPLE_DATA.len()),
+            ).void_unwrap();
+            (
+                compressed,
+                VecWriter::with_capacity(EXAMPLE_DATA.len()),
+                LzssDyn::new(EI, EJ, 0x20).unwrap(),
+            )
+        },
+        |(r, w, lzss)| {
+            lzss.decompress(SliceReader::new(&r), w).void_unwrap()
         },
         BatchSize::SmallInput,
     ));
