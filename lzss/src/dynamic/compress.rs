@@ -5,6 +5,7 @@
 use crate::bits::BitWriter;
 use crate::dynamic::LzssDyn;
 use crate::error::LzssError;
+use crate::macros::{get, search_loop, set};
 use crate::read_write::{Read, Write};
 
 impl LzssDyn {
@@ -28,7 +29,7 @@ impl LzssDyn {
             match reader.read().map_err(LzssError::ReadError)? {
                 None => break,
                 Some(data) => {
-                    *unsafe { buffer.get_unchecked_mut(buffer_end) } = data;
+                    set!(buffer, buffer_end, data);
                     buffer_end += 1;
                 }
             }
@@ -40,14 +41,12 @@ impl LzssDyn {
             let f1 = self.f().min(buffer_end - r);
             let mut x = 0;
             let mut y = 1;
-            let c = *unsafe { buffer.get_unchecked(r) };
-            for i in (s..r).rev() {
-                if *unsafe { buffer.get_unchecked(i) } == c {
+            let c = get!(buffer, r);
+            for (i, &ci) in search_loop!(s, r, buffer) {
+                if ci == c {
                     let mut j = 1;
                     while j < f1 {
-                        if *unsafe { buffer.get_unchecked(i + j) }
-                            != *unsafe { buffer.get_unchecked(r + j) }
-                        {
+                        if get!(buffer, i + j) != get!(buffer, r + j) {
                             break;
                         }
                         j += 1;
@@ -82,7 +81,7 @@ impl LzssDyn {
                     match reader.read().map_err(LzssError::ReadError)? {
                         None => break,
                         Some(data) => {
-                            *unsafe { buffer.get_unchecked_mut(buffer_end) } = data;
+                            set!(buffer, buffer_end, data);
                             buffer_end += 1;
                         }
                     }

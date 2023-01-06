@@ -104,6 +104,7 @@ mod error;
 mod generic;
 #[cfg(any(test, feature = "std"))]
 mod io_simple;
+mod macros;
 mod read_write;
 #[cfg_attr(feature = "safe", path = "slice_safe.rs")]
 mod slice;
