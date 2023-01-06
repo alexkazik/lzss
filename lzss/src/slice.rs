@@ -1,5 +1,3 @@
-use core::marker::PhantomData;
-
 use crate::{Read, Write};
 use void::Void;
 
@@ -17,20 +15,13 @@ use void::Void;
 /// Use [void_read_unwrap](crate::ResultLzssErrorVoidReadExt) to remove the Void from the result.
 /// Or [void_unwrap](crate::ResultLzssErrorVoidExt) if also the writer produces Void.
 pub struct SliceReader<'a> {
-  pos: *const u8,
-  end: *const u8,
-  phantom_data: PhantomData<&'a ()>,
+    data: &'a [u8],
 }
 impl<'a> SliceReader<'a> {
   /// Constructs a new reader.
   #[inline(always)]
   pub fn new(data: &'a [u8]) -> SliceReader<'a> {
-    let ptr = data.as_ptr();
-    SliceReader {
-      pos: ptr,
-      end: unsafe { ptr.add(data.len()) },
-      phantom_data: PhantomData,
-    }
+      Self { data }
   }
 }
 impl<'a> Read for SliceReader<'a> {
@@ -38,14 +29,10 @@ impl<'a> Read for SliceReader<'a> {
   type Error = Void;
   #[inline(always)]
   fn read(&mut self) -> Result<Option<u8>, Self::Error> {
-    if self.pos == self.end {
-      // reached eof
-      Ok(None)
-    } else {
-      let result = unsafe { self.pos.read() };
-      self.pos = unsafe { self.pos.add(1) };
-      Ok(Some(result))
-    }
+      let Some((&first, rest)) = self.data.split_first()
+          else { return Ok(None) };
+      self.data = rest;
+      Ok(Some(first))
   }
 }
 
@@ -85,23 +72,18 @@ impl std::error::Error for SliceWriteError {}
 /// assert_eq!(output.write(1), Err(SliceWriteError));
 /// ```
 pub struct SliceWriter<'a> {
-  start: *mut u8,
-  pos: *mut u8,
-  end: *mut u8,
-  phantom_data: PhantomData<&'a ()>,
+    count: usize,
+    data: &'a mut [u8],
 }
 
 impl<'a> SliceWriter<'a> {
   /// Constructs a new writer.
   #[inline(always)]
   pub fn new(data: &'a mut [u8]) -> SliceWriter<'a> {
-    let ptr = data.as_mut_ptr();
-    SliceWriter {
-      start: ptr,
-      pos: ptr,
-      end: unsafe { ptr.add(data.len()) },
-      phantom_data: PhantomData,
-    }
+      Self {
+          count: 0,
+          data,
+      }
   }
 }
 
@@ -112,17 +94,17 @@ impl<'a> Write for SliceWriter<'a> {
   type Error = SliceWriteError;
   #[inline(always)]
   fn write(&mut self, data: u8) -> Result<(), Self::Error> {
-    if self.pos == self.end {
-      Err(SliceWriteError)
-    } else {
-      unsafe { self.pos.write(data) };
-      self.pos = unsafe { self.pos.add(1) };
+      let d = core::mem::replace(&mut self.data, &mut []);
+      let (first, rest) = d.split_first_mut()
+          .ok_or(SliceWriteError)?;
+      *first = data;
+      self.data = rest;
+      self.count += 1;
       Ok(())
-    }
   }
   #[inline(always)]
   fn finish(self) -> Result<Self::Output, Self::Error> {
-    Ok((unsafe { self.pos.offset_from(self.start) }) as usize)
+      Ok(self.count)
   }
 }
 
@@ -147,21 +129,14 @@ impl<'a> Write for SliceWriter<'a> {
 /// assert_eq!(output.write(1), Err(SliceWriteError));
 /// ```
 pub struct SliceWriterExact<'a> {
-  pos: *mut u8,
-  end: *mut u8,
-  phantom_data: PhantomData<&'a ()>,
+    data: &'a mut [u8],
 }
 
 impl<'a> SliceWriterExact<'a> {
   /// Constructs a new writer.
   #[inline(always)]
   pub fn new(data: &'a mut [u8]) -> SliceWriterExact<'a> {
-    let ptr = data.as_mut_ptr();
-    SliceWriterExact {
-      pos: ptr,
-      end: unsafe { ptr.add(data.len()) },
-      phantom_data: PhantomData,
-    }
+      Self { data }
   }
 }
 
@@ -172,20 +147,19 @@ impl<'a> Write for SliceWriterExact<'a> {
   type Error = SliceWriteError;
   #[inline(always)]
   fn write(&mut self, data: u8) -> Result<(), Self::Error> {
-    if self.pos == self.end {
-      Err(SliceWriteError)
-    } else {
-      unsafe { self.pos.write(data) };
-      self.pos = unsafe { self.pos.add(1) };
+      let d = core::mem::replace(&mut self.data, &mut []);
+      let (first, rest) = d.split_first_mut()
+          .ok_or(SliceWriteError)?;
+      *first = data;
+      self.data = rest;
       Ok(())
-    }
   }
   #[inline(always)]
   fn finish(self) -> Result<Self::Output, Self::Error> {
-    if self.pos == self.end {
-      Ok(())
-    } else {
-      Err(SliceWriteError)
-    }
+      if self.data.is_empty() {
+          Ok(())
+      } else {
+          Err(SliceWriteError)
+      }
   }
 }
