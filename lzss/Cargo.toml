@@ -13,7 +13,7 @@ categories = ["compression", "no-std"]
 void = { version = "1.0.2", default-features = false }
 
 [features]
-default = ['std']
+default = ['std', 'safe']
 alloc = []
 safe = []
 std = ['void/std', 'alloc']

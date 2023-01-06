@@ -47,18 +47,20 @@ the following is required: `C = 0x20` in this library and `P = (1+EI+EJ) / 9` in
 
 ## Features
 * `alloc`       - Allows de-/compression with buffer on the heap and the `VecWriter`.
-* `safe`        - Only use safe code (`forbid(unsafe_code)`).
+* `safe`        - Only use safe code (see Safety below).
 * `std`         - Enables `alloc` and additional `IOSimpleReader`, `IOSimpleWriter`,
                   and the `Error` instance for `LzssError` and `LzssDynError`.
 
+`std` and `safe` are enabled by default.
+
 ### Usage
-With `std`:
+With defaults (`std` and `safe`):
 ```toml
 [dependencies]
 lzss = "0.8"
 ```
 
-With `no_std`:
+With `no_std` (and without `safe`):
 ```toml
 [dependencies]
 lzss = { version = "0.8", default-features = false }
@@ -75,6 +77,14 @@ let result = MyLzss::compress(
 );
 assert_eq!(result, Ok(14)); // there was no overflow and the output is 14 bytes long
 ```
+
+## Safety
+
+With the `safe` feature the code is not using any unsafe code (`forbid(unsafe_code)`), but at
+the cost of performance and size - though on modern systems that is not to mention.
+
+But on smaller systems (like microcontrollers, where `no_std` is needed) it may be noticeable.
+Which is the reason wht it can be switched on/off.
 
 <!-- cargo-rdme end -->
 

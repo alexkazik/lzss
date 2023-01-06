@@ -1,4 +1,5 @@
 #![cfg_attr(not(any(test, feature = "std")), no_std)]
+#![cfg_attr(feature = "safe", forbid(unsafe_code))]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(missing_docs)]
 #![warn(clippy::pedantic)]
@@ -51,18 +52,20 @@
 //!
 //! # Features
 //! * `alloc`       - Allows de-/compression with buffer on the heap and the [`VecWriter`](crate::VecWriter).
-//! * `safe`        - Only use safe code (`forbid(unsafe_code)`).
+//! * `safe`        - Only use safe code (see Safety below).
 //! * `std`         - Enables `alloc` and additional [`IOSimpleReader`](crate::IOSimpleReader), [`IOSimpleWriter`](crate::IOSimpleWriter),
 //!                   and the [`Error`](::std::error::Error) instance for [`LzssError`](crate::LzssError) and [`LzssDynError`](crate::LzssDynError).
 //!
+//! `std` and `safe` are enabled by default.
+//!
 //! ## Usage
-//! With `std`:
+//! With defaults (`std` and `safe`):
 //! ```toml
 //! [dependencies]
 //! lzss = "0.8"
 //! ```
 //!
-//! With `no_std`:
+//! With `no_std` (and without `safe`):
 //! ```toml
 //! [dependencies]
 //! lzss = { version = "0.8", default-features = false }
@@ -80,6 +83,14 @@
 //! );
 //! assert_eq!(result, Ok(14)); // there was no overflow and the output is 14 bytes long
 //! ```
+//!
+//! # Safety
+//!
+//! With the `safe` feature the code is not using any unsafe code (`forbid(unsafe_code)`), but at
+//! the cost of performance and size - though on modern systems that is not to mention.
+//!
+//! But on smaller systems (like microcontrollers, where `no_std` is needed) it may be noticeable.
+//! Which is the reason wht it can be switched on/off.
 
 #[cfg(feature = "alloc")]
 #[macro_use]
