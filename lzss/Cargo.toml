@@ -22,3 +22,10 @@ std = ['void/std', 'alloc']
 all-features = true
 # enable unstable features in the documentation
 rustdoc-args = ["--cfg", "docsrs"]
+
+[dev-dependencies]
+criterion = "0.4"
+
+[[bench]]
+name = "benchmark"
+harness = false
