@@ -13,6 +13,9 @@ impl LzssDyn {
     writer: &mut W,
     buffer: &mut [u8],
   ) -> Result<(), LzssError<R::Error, W::Error>> {
+    // Slice the buffer to make the length visible in the routine.
+    let buffer = &mut buffer[..2 * self.n()];
+
     let mut bit_writer = BitWriter::new(writer);
 
     let mut buffer_end = self.n() - self.f();
@@ -20,7 +23,7 @@ impl LzssDyn {
       match reader.read().map_err(LzssError::ReadError)? {
         None => break,
         Some(data) => {
-          *unsafe { buffer.get_unchecked_mut(buffer_end) } = data;
+          buffer[buffer_end] = data;
           buffer_end += 1;
         }
       }
@@ -32,12 +35,12 @@ impl LzssDyn {
       let f1 = self.f().min(buffer_end - r);
       let mut x = 0;
       let mut y = 1;
-      let c = *unsafe { buffer.get_unchecked(r) };
-      for i in (s..r).rev() {
-        if *unsafe { buffer.get_unchecked(i) } == c {
+      let c = buffer[r];
+      for (i, &ci) in (s..r).zip(&buffer[s..r]).rev() {
+        if ci == c {
           let mut j = 1;
           while j < f1 {
-            if *unsafe { buffer.get_unchecked(i + j) } != *unsafe { buffer.get_unchecked(r + j) } {
+            if buffer[i + j] != buffer[r + j] {
               break;
             }
             j += 1;
@@ -72,7 +75,7 @@ impl LzssDyn {
           match reader.read().map_err(LzssError::ReadError)? {
             None => break,
             Some(data) => {
-              *unsafe { buffer.get_unchecked_mut(buffer_end) } = data;
+              buffer[buffer_end] = data;
               buffer_end += 1;
             }
           }
