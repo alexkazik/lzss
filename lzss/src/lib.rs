@@ -3,6 +3,7 @@
 // Allow many single char names, this is done to copy the original code as close as possible.
 #![allow(clippy::many_single_char_names)]
 #![warn(missing_docs)]
+#![forbid(unsafe_code)]
 
 //! # Lempel–Ziv–Storer–Szymanski de-/compression
 //!
