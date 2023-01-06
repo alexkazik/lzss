@@ -2,6 +2,7 @@
 members = [
     "lzss",
     "lzss-cli",
+    "fuzzing",
 ]
 
 [profile.release]

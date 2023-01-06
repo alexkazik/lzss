@@ -1,0 +1,11 @@
+# Fuzz testing
+
+To run the fuzz tests:
+
+```
+$ cargo install honggfuzz
+$ cargo hfuzz run dynamic_compress
+$ cargo hfuzz run dynamic_decompress
+$ cargo hfuzz run generic_compress
+$ cargo hfuzz run generic_decompress
+```
