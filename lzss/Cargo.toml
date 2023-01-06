@@ -17,3 +17,10 @@ default = ['std']
 const_panic = []
 alloc = []
 std = ['void/std', 'alloc']
+
+[dev-dependencies]
+criterion = "0.4"
+
+[[bench]]
+name = "benchmark"
+harness = false
