@@ -30,8 +30,7 @@ fn compress_in_place() {
           assert_eq!(
             decompressed_len + (compressed.len() - new_offset),
             EXAMPLE_DATA.len(),
-            "LZSS::compress_in_place(offset={}): decompressed size error",
-            offset
+            "LZSS::compress_in_place(offset={offset}): decompressed size error"
           );
           decompressed[decompressed_len..].copy_from_slice(&compressed[new_offset..]);
         }
@@ -39,14 +38,10 @@ fn compress_in_place() {
         assert_eq!(
           &decompressed[..],
           EXAMPLE_DATA,
-          "LZSS::compress_in_place(offset={}): decompressed data does not match",
-          offset
+          "LZSS::compress_in_place(offset={offset}): decompressed data does not match"
         );
       }
-      Err(error) => panic!(
-        "LZSS::compress_in_place(offset={}): decompress failed: {}",
-        offset, error
-      ),
+      Err(error) => panic!("LZSS::compress_in_place(offset={offset}): decompress failed: {error}"),
     }
   }
 }

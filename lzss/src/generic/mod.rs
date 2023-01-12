@@ -297,9 +297,9 @@ mod tests {
     let offset: usize = TestLZSS::MIN_OFFSET + big_test_data.len() / 8;
     let mut io = Vec::new();
     io.resize(offset + big_test_data.len(), 0);
-    let mut io = io.as_mut_slice();
+    let io = io.as_mut_slice();
     io[offset..].copy_from_slice(big_test_data);
-    let (c, u) = TestLZSS::compress_in_place(&mut io, offset);
+    let (c, u) = TestLZSS::compress_in_place(io, offset);
     assert_eq!(u, None);
     // compare both
     assert_eq!(output1.as_slice(), &io[0..c]);

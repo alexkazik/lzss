@@ -90,13 +90,13 @@ impl<T: Write> Write for WriteCounter<T> {
 fn main() {
   let args = parse_args().unwrap_or_else(|err| {
     let name = std::env::args().next().unwrap();
-    eprintln!("error: {}", err);
-    eprintln!("usage: {} <'e'|'d'> <ei,ej,c>", name);
-    eprintln!("example: {} e 10,4,0x20", name);
+    eprintln!("error: {err}");
+    eprintln!("usage: {name} <'e'|'d'> <ei,ej,c>");
+    eprintln!("example: {name} e 10,4,0x20");
     exit(1)
   });
   let lzss = LzssDyn::new(args.ei, args.ej, args.c).unwrap_or_else(|err| {
-    eprintln!("error: {}", err);
+    eprintln!("error: {err}");
     exit(1)
   });
   let mut stdin = stdin();
@@ -124,11 +124,11 @@ fn main() {
       }
     }
     Err(LzssError::ReadError(err)) => {
-      eprintln!("error while reading: {}", err);
+      eprintln!("error while reading: {err}");
       exit(1)
     }
     Err(LzssError::WriteError(err)) => {
-      eprintln!("error while writing: {}", err);
+      eprintln!("error while writing: {err}");
       exit(1)
     }
   }

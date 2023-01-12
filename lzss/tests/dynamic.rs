@@ -30,10 +30,7 @@ fn dynamic() {
     assert_eq!(
       is_valid,
       params.is_ok(),
-      "LzssDyn<{},{},0x{:02x}>::new returned the wrong case",
-      ei,
-      ej,
-      INIT_BYTE
+      "LzssDyn<{ei},{ej},0x{INIT_BYTE:02x}>::new returned the wrong case"
     );
     if let Ok(lzss) = params {
       let encoded = lzss
@@ -51,10 +48,7 @@ fn dynamic() {
       assert_eq!(
         EXAMPLE_DATA,
         &decoded[..],
-        "LzssDyn<{},{},0x{:02x}> Data mismatch",
-        ei,
-        ej,
-        INIT_BYTE
+        "LzssDyn<{ei},{ej},0x{INIT_BYTE:02x}> Data mismatch"
       );
     }
   }

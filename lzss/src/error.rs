@@ -12,8 +12,8 @@ pub enum LzssError<R, W> {
 impl<R: Display, W: Display> core::fmt::Display for LzssError<R, W> {
   fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
     match self {
-      LzssError::ReadError(error) => write!(f, "Read error: {}", error),
-      LzssError::WriteError(error) => write!(f, "Write error: {}", error),
+      LzssError::ReadError(error) => write!(f, "Read error: {error}"),
+      LzssError::WriteError(error) => write!(f, "Write error: {error}"),
     }
   }
 }
