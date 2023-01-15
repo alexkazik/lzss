@@ -94,7 +94,7 @@ pub use crate::slice::{SliceReader, SliceWriteError, SliceWriter, SliceWriterExa
 #[cfg(any(test, feature = "alloc"))]
 pub use crate::vec::VecWriter;
 pub use crate::void::{
-  ResultLzssErrorVoidExt, ResultLzssErrorVoidReadExt, ResultLzssErrorVoidWriteExt,
+    ResultLzssErrorVoidExt, ResultLzssErrorVoidReadExt, ResultLzssErrorVoidWriteExt,
 };
 
 mod bits;

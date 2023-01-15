@@ -4,40 +4,40 @@ use lzss::{Lzss, LzssDyn, ResultLzssErrorVoidExt, SliceReader, VecWriter};
 mod common;
 
 macro_rules! test_generic {
-  ($name:ident, $ei:expr, $ej:expr) => {
-    #[test]
-    #[ignore]
-    fn $name() {
-      debug_assert!(false, "Disabled in debug mode");
+    ($name:ident, $ei:expr, $ej:expr) => {
+        #[test]
+        #[ignore]
+        fn $name() {
+            debug_assert!(false, "Disabled in debug mode");
 
-      type MyLzss = Lzss<$ei, $ej, INIT_BYTE, { 1 << $ei }, { 2 << $ei }>;
+            type MyLzss = Lzss<$ei, $ej, INIT_BYTE, { 1 << $ei }, { 2 << $ei }>;
 
-      // compress and decompress
-      let compressed = MyLzss::compress_heap(
-        SliceReader::new(EXAMPLE_DATA),
-        VecWriter::with_capacity(EXAMPLE_DATA.len()),
-      )
-      .void_unwrap();
-      let decompressed = MyLzss::decompress_heap(
-        SliceReader::new(&compressed),
-        VecWriter::with_capacity(EXAMPLE_DATA.len()),
-      )
-      .void_unwrap();
+            // compress and decompress
+            let compressed = MyLzss::compress_heap(
+                SliceReader::new(EXAMPLE_DATA),
+                VecWriter::with_capacity(EXAMPLE_DATA.len()),
+            )
+            .void_unwrap();
+            let decompressed = MyLzss::decompress_heap(
+                SliceReader::new(&compressed),
+                VecWriter::with_capacity(EXAMPLE_DATA.len()),
+            )
+            .void_unwrap();
 
-      // check if the decompressed matches the original
-      assert_eq!(EXAMPLE_DATA, &decompressed[..]);
+            // check if the decompressed matches the original
+            assert_eq!(EXAMPLE_DATA, &decompressed[..]);
 
-      // compress via dyn and check if the compressed is identical
-      let lzss_dyn = LzssDyn::new($ei, $ej, INIT_BYTE).unwrap();
-      let compressed_dyn = lzss_dyn
-        .compress(
-          SliceReader::new(EXAMPLE_DATA),
-          VecWriter::with_capacity(EXAMPLE_DATA.len()),
-        )
-        .void_unwrap();
-      assert_eq!(compressed, compressed_dyn);
-    }
-  };
+            // compress via dyn and check if the compressed is identical
+            let lzss_dyn = LzssDyn::new($ei, $ej, INIT_BYTE).unwrap();
+            let compressed_dyn = lzss_dyn
+                .compress(
+                    SliceReader::new(EXAMPLE_DATA),
+                    VecWriter::with_capacity(EXAMPLE_DATA.len()),
+                )
+                .void_unwrap();
+            assert_eq!(compressed, compressed_dyn);
+        }
+    };
 }
 
 // "regular"
