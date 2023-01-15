@@ -1,5 +1,7 @@
 /* This file is based on the LZSS encoder-decoder  (c) Haruhiko Okumura */
 
+// Notice: generic/compress.rs is generated from this file, see build.rs.
+
 use crate::bits::BitWriter;
 use crate::dynamic::LzssDyn;
 use crate::error::LzssError;
@@ -15,7 +17,9 @@ impl LzssDyn {
         writer: &mut W,
         buffer: &mut [u8],
     ) -> Result<(), LzssError<R::Error, W::Error>> {
-        // It is already ensured that EI+EJ are "reasonable" and the buffer has the correct size
+        // It is already ensured that EI+EJ are "reasonable"
+        // And for generic: 1<<EI == N and 2*N == N2
+        // And for dynamic: the buffer has the correct size
 
         let mut bit_writer = BitWriter::new(writer);
 
