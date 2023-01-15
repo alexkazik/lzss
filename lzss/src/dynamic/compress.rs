@@ -15,6 +15,8 @@ impl LzssDyn {
         writer: &mut W,
         buffer: &mut [u8],
     ) -> Result<(), LzssError<R::Error, W::Error>> {
+        // It is already ensured that EI+EJ are "reasonable" and the buffer has the correct size
+
         let mut bit_writer = BitWriter::new(writer);
 
         let mut buffer_end = self.n() - self.f();

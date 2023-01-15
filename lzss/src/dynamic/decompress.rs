@@ -15,25 +15,24 @@ impl LzssDyn {
         writer: &mut W,
         buffer: &mut [u8],
     ) -> Result<(), LzssError<R::Error, W::Error>> {
+        // It is already ensured that EI+EJ are "reasonable" and the buffer has the correct size
+
         let mut bit_reader = BitReader::new(reader);
 
         let mut r = self.n() - self.f();
         loop {
-            if let Some(c) = bit_reader.read_bits(1).map_err(LzssError::ReadError)? {
-                if c != 0 {
-                    if let Some(b) = bit_reader.read_bits(8).map_err(LzssError::ReadError)? {
-                        writer.write(b as u8).map_err(LzssError::WriteError)?;
-                        *unsafe { buffer.get_unchecked_mut(r) } = b as u8;
-                        r = (r + 1) & (self.n() - 1);
-                    } else {
-                        return Ok(());
-                    }
-                } else if let Some(ij) = bit_reader
-                    .read_bits(self.ei + self.ej)
+            if let Some(inp) = bit_reader.read_bits(9).map_err(LzssError::ReadError)? {
+                if (inp & 0x100) != 0 {
+                    writer.write(inp as u8).map_err(LzssError::WriteError)?;
+                    *unsafe { buffer.get_unchecked_mut(r) } = inp as u8;
+                    r = (r + 1) & (self.n() - 1);
+                } else if let Some(inp2) = bit_reader
+                    .read_bits(self.ei + self.ej - 8)
                     .map_err(LzssError::ReadError)?
                 {
-                    let i = (ij >> self.ej) as usize;
-                    let j = (ij & ((1 << self.ej) - 1)) as usize;
+                    let inp = (inp << (self.ei + self.ej - 8)) | inp2;
+                    let i = (inp >> self.ej) as usize;
+                    let j = (inp & ((1 << self.ej) - 1)) as usize;
                     for k in 0..=j + self.p() {
                         let b = *unsafe { buffer.get_unchecked((i + k) & (self.n() - 1)) };
                         writer.write(b).map_err(LzssError::WriteError)?;
