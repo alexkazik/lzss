@@ -1,9 +1,9 @@
 /* This file is based on the LZSS encoder-decoder  (c) Haruhiko Okumura */
 
 use crate::bits::BitWriter;
+use crate::error::LzssError;
 use crate::generic::Lzss;
 use crate::read_write::{Read, Write};
-use crate::LzssError;
 
 impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
     Lzss<EI, EJ, C, N, N2>

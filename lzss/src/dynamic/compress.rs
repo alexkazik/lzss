@@ -2,8 +2,8 @@
 
 use crate::bits::BitWriter;
 use crate::dynamic::LzssDyn;
+use crate::error::LzssError;
 use crate::read_write::{Read, Write};
-use crate::LzssError;
 
 impl LzssDyn {
     // Allow many single char names, this is done to copy the original code as close as possible.

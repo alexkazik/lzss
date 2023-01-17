@@ -1,4 +1,5 @@
-use crate::{LzssError, Read, Write};
+use crate::error::LzssError;
+use crate::read_write::{Read, Write};
 
 mod compress;
 mod decompress;

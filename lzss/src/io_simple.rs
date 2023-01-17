@@ -1,4 +1,4 @@
-use crate::{Read, Write};
+use crate::read_write::{Read, Write};
 use std::io::Error;
 
 // As already denoted this is a very simplistic implementation,

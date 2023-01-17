@@ -1,4 +1,4 @@
-use crate::LzssError;
+use crate::error::LzssError;
 use void::{unreachable, Void};
 
 /// Conversion from `Result<T, LzssError<Void, Void>>` to `T`.

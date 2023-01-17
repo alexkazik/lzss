@@ -1,6 +1,5 @@
+use crate::read_write::{Read, Write};
 use core::marker::PhantomData;
-
-use crate::{Read, Write};
 use void::Void;
 
 /// Read from a slice.
