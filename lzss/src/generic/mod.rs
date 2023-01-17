@@ -77,9 +77,8 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
 
         let mut buffer = vec![C; N2];
-        Self::compress_internal(&mut reader, &mut writer, unsafe {
-            &mut *(buffer.as_mut_ptr().cast::<[u8; N2]>())
-        })?;
+        let buffer = unsafe { &mut *(buffer.as_mut_ptr().cast::<[u8; N2]>()) };
+        Self::compress_internal(&mut reader, &mut writer, buffer)?;
         writer.finish().map_err(LzssError::WriteError)
     }
 
@@ -122,9 +121,8 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
 
         let mut buffer = vec![C; N];
-        Self::decompress_internal(&mut reader, &mut writer, unsafe {
-            &mut *(buffer.as_mut_ptr().cast::<[u8; N]>())
-        })?;
+        let buffer = unsafe { &mut *(buffer.as_mut_ptr().cast::<[u8; N]>()) };
+        Self::decompress_internal(&mut reader, &mut writer, buffer)?;
         writer.finish().map_err(LzssError::WriteError)
     }
 
