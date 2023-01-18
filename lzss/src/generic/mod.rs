@@ -1,5 +1,6 @@
 use crate::error::LzssError;
 use crate::read_write::{Read, Write};
+use core::convert::Infallible;
 
 mod compress;
 mod compress_in_place;
@@ -43,7 +44,9 @@ mod decompress;
 /// assert!(result.is_ok()); // the output is exactly 14 bytes long
 /// ```
 
-pub struct Lzss<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>(());
+pub struct Lzss<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>(
+    Infallible,
+);
 
 impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
     Lzss<EI, EJ, C, N, N2>
