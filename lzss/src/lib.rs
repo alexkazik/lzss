@@ -1,6 +1,16 @@
 #![cfg_attr(not(any(test, feature = "std")), no_std)]
 #![cfg_attr(feature = "const_panic", feature(const_panic))]
 #![warn(missing_docs)]
+#![warn(clippy::pedantic)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_lossless)]
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::inline_always)]
+#![allow(clippy::match_same_arms)]
+#![allow(clippy::missing_errors_doc)]
+#![allow(clippy::missing_panics_doc)]
+#![allow(clippy::module_name_repetitions)]
+#![allow(clippy::manual_assert)]
 
 //! # Lempel–Ziv–Storer–Szymanski de-/compression
 //!
@@ -14,7 +24,7 @@
 //!
 //! # Generic vs. dynamic
 //!
-//! This crate comes in two flavors: generic ([Lzss]) and dynamic ([LzssDyn]).
+//! This crate comes in two flavors: generic ([`Lzss`]) and dynamic ([`LzssDyn`]).
 //!
 //! The dynamic one has one compress function and all parameters are passed to
 //! it at runtime, making it very adaptive.
@@ -42,18 +52,18 @@
 //! # Features
 //! * `alloc`       - Enables everything marked with `alloc`.
 //! * `std`         - Enables everything marked with `std`
-//!                   and the [Error](std::error::Error) instance for [LzssError] and [LzssDynError].
+//!                   and the [`Error`](std::error::Error) instance for [`LzssError`] and [`LzssDynError`].
 //! * `const_panic` - Requires nightly and enables compile-time
-//!                   checks of the parameters, see [Lzss].
+//!                   checks of the parameters, see [`Lzss`].
 //!
 //! ## Usage
-//! With std:
+//! With `std`:
 //! ```toml
 //! [dependencies]
 //! lzss = "0.8"
 //! ```
 //!
-//! With no_std:
+//! With `no_std`:
 //! ```toml
 //! [dependencies]
 //! lzss = { version = "0.8", default-features = false }

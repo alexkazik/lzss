@@ -10,8 +10,8 @@ use crate::{LzssError, Read, Write};
 /// * `EI` - The number of bits in the offset, usually `10..13`
 /// * `EJ` - The number of bits in the length, usually `4..5`
 /// * `C` - The initial fill byte of the buffer, usually `0x20` (space)
-/// * `N` - Equals `1 << EI`, the size of the buffer for [Lzss::decompress()]
-/// * `N2` - Equals `2 << EI` (`N * 2`), the size of the buffer for [Lzss::compress()]
+/// * `N` - Equals `1 << EI`, the size of the buffer for [`Lzss::decompress`]
+/// * `N2` - Equals `2 << EI` (`N * 2`), the size of the buffer for [`Lzss::compress`]
 ///
 /// # Restrictions
 /// * `EJ` must be larger than `0`
@@ -105,7 +105,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     Self::assert_parameters();
     let mut buffer = vec![C; N2];
     Self::compress_internal(&mut reader, &mut writer, unsafe {
-      &mut *(buffer.as_mut_ptr() as *mut [u8; N2])
+      &mut *(buffer.as_mut_ptr().cast::<[u8; N2]>())
     })?;
     writer.finish().map_err(LzssError::WriteError)
   }
@@ -149,7 +149,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     Self::assert_parameters();
     let mut buffer = vec![C; N];
     Self::decompress_internal(&mut reader, &mut writer, unsafe {
-      &mut *(buffer.as_mut_ptr() as *mut [u8; N])
+      &mut *(buffer.as_mut_ptr().cast::<[u8; N]>())
     })?;
     writer.finish().map_err(LzssError::WriteError)
   }
@@ -183,7 +183,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
   ///
   /// Even when the compression fails due to space the data is recoverable.
   ///
-  /// The minimum offset is [Lzss::MIN_OFFSET], though if the offset is `Lzss::MIN_OFFSET + input_size/8`
+  /// The minimum offset is [`Lzss::MIN_OFFSET`], though if the offset is `Lzss::MIN_OFFSET + input_size/8`
   /// then the compression can't fail.
   pub fn compress_in_place(io: &mut [u8], offset: usize) -> (usize, Option<usize>) {
     Self::compress_in_place_internal(io, offset)

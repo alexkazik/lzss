@@ -55,33 +55,39 @@ impl LzssDyn {
 
   /// Get the ei parameter.
   #[inline(always)]
+  #[must_use]
   pub const fn ei(&self) -> usize {
     self.ei
   }
 
   /// Get the ej parameter.
   #[inline(always)]
+  #[must_use]
   pub const fn ej(&self) -> usize {
     self.ej
   }
 
   /// Get the c parameter.
   #[inline(always)]
+  #[must_use]
   pub const fn c(&self) -> u8 {
     self.c
   }
 
   #[inline(always)]
+  #[must_use]
   pub(crate) const fn n(&self) -> usize {
     1 << self.ei
   }
 
   #[inline(always)]
+  #[must_use]
   pub(crate) const fn p(&self) -> usize {
     (1 + self.ei + self.ej) / 9
   }
 
   #[inline(always)]
+  #[must_use]
   pub(crate) const fn f(&self) -> usize {
     (1 << self.ej) + self.p()
   }
@@ -145,7 +151,7 @@ impl LzssDyn {
   }
 }
 
-/// The error returned by [LzssDyn::new].
+/// The error returned by [`LzssDyn::new`].
 #[derive(Debug)]
 pub enum LzssDynError {
   /// Invalid EJ, must be larger than 0.
@@ -169,7 +175,7 @@ impl core::fmt::Display for LzssDynError {
   }
 }
 
-/// `std` Implementation of [Error](std::error::Error) for [LzssDynError]
+/// `std` Implementation of [`Error`](std::error::Error) for [`LzssDynError`]
 #[cfg(any(test, feature = "std"))]
 impl std::error::Error for LzssDynError {}
 

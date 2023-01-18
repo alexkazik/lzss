@@ -9,6 +9,7 @@ pub struct IOSimpleReader<'a, R: std::io::Read>(&'a mut R);
 impl<'a, R: std::io::Read> IOSimpleReader<'a, R> {
   /// Constructs a new reader.
   #[inline(always)]
+  #[must_use]
   pub fn new(stream: &'a mut R) -> IOSimpleReader<'a, R> {
     IOSimpleReader(stream)
   }
@@ -30,6 +31,7 @@ pub struct IOSimpleWriter<'a, W: std::io::Write>(&'a mut W);
 impl<'a, W: std::io::Write> IOSimpleWriter<'a, W> {
   /// Constructs a new writer.
   #[inline(always)]
+  #[must_use]
   pub fn new(stream: &'a mut W) -> IOSimpleWriter<'a, W> {
     IOSimpleWriter(stream)
   }

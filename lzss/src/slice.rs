@@ -14,8 +14,8 @@ use void::Void;
 /// assert_eq!(input.read(), Ok(None));
 /// ```
 ///
-/// Use [void_read_unwrap](crate::ResultLzssErrorVoidReadExt) to remove the Void from the result.
-/// Or [void_unwrap](crate::ResultLzssErrorVoidExt) if also the writer produces Void.
+/// Use [`void_read_unwrap`](crate::ResultLzssErrorVoidReadExt) to remove the Void from the result.
+/// Or [`void_unwrap`](crate::ResultLzssErrorVoidExt) if also the writer produces Void.
 pub struct SliceReader<'a> {
   pos: *const u8,
   end: *const u8,
@@ -24,6 +24,7 @@ pub struct SliceReader<'a> {
 impl<'a> SliceReader<'a> {
   /// Constructs a new reader.
   #[inline(always)]
+  #[must_use]
   pub fn new(data: &'a [u8]) -> SliceReader<'a> {
     let ptr = data.as_ptr();
     SliceReader {
@@ -94,6 +95,7 @@ pub struct SliceWriter<'a> {
 impl<'a> SliceWriter<'a> {
   /// Constructs a new writer.
   #[inline(always)]
+  #[must_use]
   pub fn new(data: &'a mut [u8]) -> SliceWriter<'a> {
     let ptr = data.as_mut_ptr();
     SliceWriter {
@@ -155,6 +157,7 @@ pub struct SliceWriterExact<'a> {
 impl<'a> SliceWriterExact<'a> {
   /// Constructs a new writer.
   #[inline(always)]
+  #[must_use]
   pub fn new(data: &'a mut [u8]) -> SliceWriterExact<'a> {
     let ptr = data.as_mut_ptr();
     SliceWriterExact {

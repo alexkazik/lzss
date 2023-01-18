@@ -4,17 +4,18 @@ use void::Void;
 
 /// `alloc/std` Write into a vector.
 ///
-/// In order to write into a referenced vector use [IOSimpleWriter](crate::IOSimpleWriter),
-/// and [SliceReader](crate::SliceReader) to read from a vector.
+/// In order to write into a referenced vector use [`IOSimpleWriter`](crate::IOSimpleWriter),
+/// and [`SliceReader`](crate::SliceReader) to read from a vector.
 ///
-/// Use [void_write_unwrap](crate::ResultLzssErrorVoidWriteExt::void_write_unwrap) to remove the Void from the result.
-/// Or [void_unwrap](crate::ResultLzssErrorVoidExt::void_unwrap) if also the reader produces Void.
+/// Use [`void_write_unwrap`](crate::ResultLzssErrorVoidWriteExt::void_write_unwrap) to remove the Void from the result.
+/// Or [`zvoid_unwrap`](crate::ResultLzssErrorVoidExt::void_unwrap) if also the reader produces Void.
 pub struct VecWriter(Vec<u8>);
 impl VecWriter {
   /// Constructs a new, empty writer with the specified capacity.
   ///
   /// Note: The vector is not truncated to the actually used space.
   #[inline(always)]
+  #[must_use]
   pub fn with_capacity(capacity: usize) -> VecWriter {
     VecWriter(Vec::with_capacity(capacity))
   }

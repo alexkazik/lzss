@@ -17,7 +17,7 @@ pub trait Read {
 pub trait Write {
   /// The final output.
   ///
-  /// This will be often `()`, but for example the [VecWriter](crate::VecWriter) returns the [Vec].
+  /// This will be often `()`, but for example the [`VecWriter`](crate::VecWriter) returns the [Vec].
   ///
   /// Please see the example implementations.
   type Output;
