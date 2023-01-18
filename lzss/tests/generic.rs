@@ -1,5 +1,5 @@
 use common::{EXAMPLE_DATA, INIT_BYTE};
-use lzss::{Lzss, LzssDyn, ResultLzssErrorVoidExt, SliceReader, VecWriter};
+use lzss::{Lzss, ResultLzssErrorVoidExt, SliceReader, VecWriter};
 
 mod common;
 
@@ -28,8 +28,7 @@ macro_rules! test_generic {
             assert_eq!(EXAMPLE_DATA, &decompressed[..]);
 
             // compress via dyn and check if the compressed is identical
-            let lzss_dyn = LzssDyn::new($ei, $ej, INIT_BYTE).unwrap();
-            let compressed_dyn = lzss_dyn
+            let compressed_dyn = MyLzss::as_dyn()
                 .compress(
                     SliceReader::new(EXAMPLE_DATA),
                     VecWriter::with_capacity(EXAMPLE_DATA.len()),

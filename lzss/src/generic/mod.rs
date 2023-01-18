@@ -1,3 +1,4 @@
+use crate::dynamic::LzssDyn;
 use crate::error::LzssError;
 use crate::read_write::{Read, Write};
 use core::convert::Infallible;
@@ -51,6 +52,28 @@ pub struct Lzss<const EI: usize, const EJ: usize, const C: u8, const N: usize, c
 impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
     Lzss<EI, EJ, C, N, N2>
 {
+    /// Create a new [`LzssDyn`] with the parameter from this generic type.
+    ///
+    /// This is mainly useful for creating const [`LzssDyn`].
+    ///
+    /// ```
+    /// # use lzss::{Lzss, LzssDyn};
+    /// type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
+    /// const MY_DYN1: LzssDyn = MyLzss::as_dyn();
+    /// // or
+    /// const MY_DYN2: LzssDyn = Lzss::<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>::as_dyn();
+    /// ```
+    #[must_use]
+    pub const fn as_dyn() -> LzssDyn {
+        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+
+        LzssDyn {
+            ei: EI,
+            ej: EJ,
+            c: C,
+        }
+    }
+
     /// Compress the input data into the output.
     ///
     /// The buffer, with `N2` bytes, is allocated on the stack.

@@ -31,15 +31,17 @@ mod decompress;
 /// ```
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct LzssDyn {
-    ei: usize,
-    ej: usize,
-    c: u8,
+    pub(crate) ei: usize,
+    pub(crate) ej: usize,
+    pub(crate) c: u8,
 }
 
 impl LzssDyn {
     /// Create new Lzss parameters.
     ///
     /// If the parameter are not valid (see above) an error is returned.
+    ///
+    /// For creating a const see [`Lzss::as_dyn`](crate::generic::Lzss::as_dyn).
     pub fn new(ei: usize, ej: usize, c: u8) -> Result<Self, LzssDynError> {
         if ej == 0 {
             Err(LzssDynError::EjIsZero)
@@ -192,11 +194,9 @@ mod tests {
     use crate::dynamic::LzssDyn;
     use crate::slice::SliceReader;
     use crate::vec::VecWriter;
-    use crate::ResultLzssErrorVoidExt;
+    use crate::{Lzss, ResultLzssErrorVoidExt};
 
-    fn test_lzss() -> LzssDyn {
-        LzssDyn::new(10, 4, 0x20).unwrap()
-    }
+    const TEST_LZSS: LzssDyn = Lzss::<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>::as_dyn();
 
     const TEST_DATA: &[u8; 27] = b"Sample   Data   11221233123";
     const COMPRESSED_DATA: [u8; 26] = [
@@ -206,7 +206,7 @@ mod tests {
 
     #[test]
     fn test_decompress() {
-        let output = test_lzss()
+        let output = TEST_LZSS
             .decompress(
                 SliceReader::new(&COMPRESSED_DATA),
                 VecWriter::with_capacity(TEST_DATA.len()),
@@ -217,7 +217,7 @@ mod tests {
 
     #[test]
     fn test_compress() {
-        let output = test_lzss()
+        let output = TEST_LZSS
             .compress(
                 SliceReader::new(TEST_DATA),
                 VecWriter::with_capacity(COMPRESSED_DATA.len()),
@@ -230,14 +230,14 @@ mod tests {
     fn test_compress_big() {
         let big_test_data = include_bytes!("mod.rs");
         // compress
-        let output1 = test_lzss()
+        let output1 = TEST_LZSS
             .compress(
                 SliceReader::new(big_test_data),
                 VecWriter::with_capacity(big_test_data.len()),
             )
             .void_unwrap();
         // decompress
-        let output2 = test_lzss()
+        let output2 = TEST_LZSS
             .decompress(
                 SliceReader::new(&output1),
                 VecWriter::with_capacity(big_test_data.len()),
@@ -249,7 +249,7 @@ mod tests {
     #[test]
     fn test_decompress_with_buffer() {
         let mut buffer = [0u8; 1111];
-        let output = test_lzss()
+        let output = TEST_LZSS
             .decompress_with_buffer(
                 SliceReader::new(&COMPRESSED_DATA),
                 VecWriter::with_capacity(TEST_DATA.len()),
@@ -262,7 +262,7 @@ mod tests {
     #[test]
     fn test_compress_with_buffer() {
         let mut buffer = [0u8; 2222];
-        let output = test_lzss()
+        let output = TEST_LZSS
             .compress_with_buffer(
                 SliceReader::new(TEST_DATA),
                 VecWriter::with_capacity(COMPRESSED_DATA.len()),
