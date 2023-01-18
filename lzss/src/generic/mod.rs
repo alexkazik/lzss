@@ -138,11 +138,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         Self::decompress_internal(&mut reader, &mut writer, buffer)?;
         writer.finish().map_err(LzssError::WriteError)
     }
-}
 
-impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
-    Lzss<EI, EJ, C, N, N2>
-{
     /// Compress, the input and output is in the same slice.
     ///
     /// The input is located at `io[offset..]`.
@@ -167,11 +163,9 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     ///
     /// It's a little less than `N`.
     pub const MIN_OFFSET: usize = (N - Self::F) + Self::MIN_GAP_SIZE;
-}
 
-impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
-    Lzss<EI, EJ, C, N, N2>
-{
+    // non-public helpers
+
     pub(crate) const P: usize = (1 + EI + EJ) / 9; /* If match length <= P then output one character */
     pub(crate) const F: usize = (1 << EJ) + Self::P; /* lookahead buffer size */
     pub(crate) const MIN_GAP_SIZE: usize = Self::P + 4;
