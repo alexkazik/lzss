@@ -24,7 +24,7 @@
 //!
 //! # Generic vs. dynamic
 //!
-//! This crate comes in two flavors: generic ([`Lzss`]) and dynamic ([`LzssDyn`]).
+//! This crate comes in two flavors: generic ([`Lzss`](crate::Lzss)) and dynamic ([`LzssDyn`](crate::LzssDyn)).
 //!
 //! The dynamic one has one compress function and all parameters are passed to
 //! it at runtime, making it very adaptive.
@@ -50,11 +50,11 @@
 //! the following is required: `C = 0x20` in this library and `P = (1+EI+EJ) / 9` in Okumuras program.
 //!
 //! # Features
-//! * `alloc`       - Enables everything marked with `alloc`.
-//! * `std`         - Enables everything marked with `std`
-//!                   and the [`Error`](std::error::Error) instance for [`LzssError`] and [`LzssDynError`].
+//! * `alloc`       - Allows de-/compression with buffer on the heap and the [`VecWriter`](crate::VecWriter).
+//! * `std`         - Enables `alloc` and additional [`IOSimpleReader`](crate::IOSimpleReader), [`IOSimpleWriter`](crate::IOSimpleWriter),
+//!                   and the [`Error`](::std::error::Error) instance for [`LzssError`](crate::LzssError) and [`LzssDynError`](crate::LzssDynError).
 //! * `const_panic` - Requires nightly and enables compile-time
-//!                   checks of the parameters, see [`Lzss`].
+//!                   checks of the parameters, see [`Lzss`](crate::Lzss).
 //!
 //! ## Usage
 //! With `std`:
@@ -81,18 +81,6 @@
 //! );
 //! assert_eq!(result, Ok(14)); // there was no overflow and the output is 14 bytes long
 //! ```
-
-#[cfg(doctest)]
-mod test_readme_md {
-  macro_rules! external_doc_test {
-    ($x:expr) => {
-      #[doc = $x]
-      extern "C" {}
-    };
-  }
-
-  external_doc_test!(include_str!("../README.md"));
-}
 
 #[cfg(feature = "alloc")]
 #[macro_use]

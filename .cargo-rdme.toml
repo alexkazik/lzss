@@ -1,0 +1,27 @@
+## Override the README file path.  When this is not set cargo rdme will use the file path defined
+## in the project’s `Cargo.toml`.
+readme-path = "README.md"
+#
+## What line terminator to use when generating the README file.  This can be "lf" or "crlf".
+line-terminator = "lf"
+#
+## If you are using a workspace to hold multiple projects, use this to select the project from
+## which to extract the documentation from.  It can be useful to also set `readme-path` to create
+## the README file in the root of the project.
+#workspace-project = "lzss"
+#
+## The default entrypoint will be `src/lib.rs`.  You can change that in the `entrypoint` table.
+[entrypoint]
+## The entrypoint type can be "lib" or "bin".
+type = "lib"
+## When you set type to "bin" the entrypoint default to `src/main.rs`.  If you have binary targets
+## specified in your cargo manifest you can select them by name with `bin-name`.
+#bin-name = "my-bin-name"
+#
+[intralinks]
+## Defines the base url to use in intralinks urls.  The default value is `https://docs.rs`.
+#docs-rs-base-url = "https://mydocs.rs"
+## Defines the version to use in intralinks urls.  The default value is `latest`.
+#docs-rs-version = "1.0.0"
+## If this is set the intralinks will be stripping in the README file.
+strip-links = true

@@ -1,4 +1,14 @@
-# Lempel–Ziv–Storer–Szymanski de-/compression
+[![Dependency status](https://deps.rs/repo/github/alexkazik/lzss/status.svg)](https://deps.rs/repo/github/alexkazik/lzss)
+[![crates.io](https://img.shields.io/crates/v/lzss.svg)](https://crates.io/crates/lzss)
+[![Downloads](https://img.shields.io/crates/d/lzss.svg)](https://crates.io/crates/lzss)
+[![Github stars](https://img.shields.io/github/stars/alexkazik/lzss.svg?logo=github)](https://github.com/alexkazik/lzss/stargazers)
+[![License](https://img.shields.io/crates/l/lzss.svg)](./LICENSE)
+
+# crate lzss
+
+<!-- cargo-rdme start -->
+
+## Lempel–Ziv–Storer–Szymanski de-/compression
 
 `lzss` is a lossless data compression algorithm in pure Rust.
 This crate is built for embedded systems:
@@ -8,9 +18,9 @@ This crate is built for embedded systems:
 * `no_std` feature
 * All parameters can be compile-time only
 
-# Generic vs. dynamic
+## Generic vs. dynamic
 
-This crate comes in two flavors: generic (Lzss) and dynamic (LzssDyn).
+This crate comes in two flavors: generic (`Lzss`) and dynamic (`LzssDyn`).
 
 The dynamic one has one compress function and all parameters are passed to
 it at runtime, making it very adaptive.
@@ -23,28 +33,41 @@ generated when multiple parameter sets are used.
 (The same applies for decompress and other functions, only used function will
 be in the generated program.)
 
-# Lack of a header
+## Lack of a header
 
 This algorithm has by design no header at all. Please be aware that it is not
 possible to check if the contents is correct, or even the length matches.
 It is recommended to add a header based on the requirements.
 
-
-# Origin
+## Origin
 This code is based on the [LZSS encoder-decoder by Haruhiko Okumura, public domain](https://oku.edu.mie-u.ac.jp/~okumura/compression/lzss.c).
 
-# Features
-* `alloc`       - Enables everything marked with `alloc`.
-* `std`         - Enables everything marked with `std`
+In order to create an encoder-decoder which is compatible to the program above
+the following is required: `C = 0x20` in this library and `P = (1+EI+EJ) / 9` in Okumuras program.
+
+## Features
+* `alloc`       - Allows de-/compression with buffer on the heap and the `VecWriter`.
+* `std`         - Enables `alloc` and additional `IOSimpleReader`, `IOSimpleWriter`,
                   and the `Error` instance for `LzssError` and `LzssDynError`.
 * `const_panic` - Requires nightly and enables compile-time
-                  checks of the parameters for Lzss.
+                  checks of the parameters, see `Lzss`.
 
-# Example
+### Usage
+With `std`:
+```toml
+[dependencies]
+lzss = "0.8"
+```
+
+With `no_std`:
+```toml
+[dependencies]
+lzss = { version = "0.8", default-features = false }
+```
+
+## Example
 ```rust
-use lzss::{Lzss, SliceReader, SliceWriter};
-
-type MyLzss = Lzss<10, 4, 0x20, {1 << 10}, {2 << 10}>;
+type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
 let input = b"Example Data";
 let mut output = [0; 30];
 let result = MyLzss::compress(
@@ -53,6 +76,8 @@ let result = MyLzss::compress(
 );
 assert_eq!(result, Ok(14)); // there was no overflow and the output is 14 bytes long
 ```
+
+<!-- cargo-rdme end -->
 
 # Command-Line-Interface
 
