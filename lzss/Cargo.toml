@@ -16,3 +16,8 @@ void = { version = "1.0.2", default-features = false }
 default = ['std']
 alloc = []
 std = ['void/std', 'alloc']
+
+[package.metadata.docs.rs]
+all-features = true
+# enable unstable features in the documentation
+rustdoc-args = ["--cfg", "docsrs"]

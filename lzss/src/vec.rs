@@ -2,13 +2,14 @@ use crate::Write;
 use alloc::vec::Vec;
 use void::Void;
 
-/// `alloc/std` Write into a vector.
+/// Write into a vector.
 ///
 /// In order to write into a referenced vector use [`IOSimpleWriter`](crate::IOSimpleWriter),
 /// and [`SliceReader`](crate::SliceReader) to read from a vector.
 ///
 /// Use [`void_write_unwrap`](crate::ResultLzssErrorVoidWriteExt::void_write_unwrap) to remove the Void from the result.
 /// Or [`zvoid_unwrap`](crate::ResultLzssErrorVoidExt::void_unwrap) if also the reader produces Void.
+#[cfg_attr(docsrs, doc(cfg(any(feature = "alloc", feature = "std"))))]
 pub struct VecWriter(Vec<u8>);
 impl VecWriter {
   /// Constructs a new, empty writer with the specified capacity.

@@ -4,7 +4,8 @@ use std::io::Error;
 // As already denoted this is a very simplistic implementation,
 // everybody is welcome to improve it.
 
-/// `std` Read from a stream, this is a inefficient exemplary implementation.
+/// Read from a stream, this is a inefficient exemplary implementation.
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 pub struct IOSimpleReader<'a, R: std::io::Read>(&'a mut R);
 impl<'a, R: std::io::Read> IOSimpleReader<'a, R> {
   /// Constructs a new reader.
@@ -26,7 +27,8 @@ impl<'a, R: std::io::Read> Read for IOSimpleReader<'a, R> {
   }
 }
 
-/// `std` Write to a stream, this is a inefficient exemplary implementation.
+/// Write to a stream, this is a inefficient exemplary implementation.
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 pub struct IOSimpleWriter<'a, W: std::io::Write>(&'a mut W);
 impl<'a, W: std::io::Write> IOSimpleWriter<'a, W> {
   /// Constructs a new writer.

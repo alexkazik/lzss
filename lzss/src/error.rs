@@ -18,7 +18,8 @@ impl<R: Display, W: Display> core::fmt::Display for LzssError<R, W> {
   }
 }
 
-/// `std` Implementation of [`Error`](std::error::Error) for [`LzssError`]
+/// Implementation of [`Error`](std::error::Error) for [`LzssError`]
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 #[cfg(any(test, feature = "std"))]
 impl<R, W> std::error::Error for LzssError<R, W>
 where

@@ -61,9 +61,10 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     writer.finish().map_err(LzssError::WriteError)
   }
 
-  /// `alloc/std` Compress the input data into the output.
+  /// Compress the input data into the output.
   ///
   /// The buffer, with `N2` bytes, is allocated on the heap.
+  #[cfg_attr(docsrs, doc(cfg(any(feature = "alloc", feature = "std"))))]
   #[cfg(feature = "alloc")]
   pub fn compress_heap<R: Read, W: Write>(
     mut reader: R,
@@ -105,9 +106,10 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     writer.finish().map_err(LzssError::WriteError)
   }
 
-  /// `alloc/std` Decompress the input data into the output.
+  /// Decompress the input data into the output.
   ///
   /// The buffer, with `N` bytes, is allocated on the heap.
+  #[cfg_attr(docsrs, doc(cfg(any(feature = "alloc", feature = "std"))))]
   #[cfg(feature = "alloc")]
   pub fn decompress_heap<R: Read, W: Write>(
     mut reader: R,
