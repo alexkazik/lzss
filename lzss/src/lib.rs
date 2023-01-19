@@ -1,7 +1,5 @@
 #![cfg_attr(not(any(test, feature = "std")), no_std)]
 #![cfg_attr(feature = "const_panic", feature(const_panic))]
-// Allow many single char names, this is done to copy the original code as close as possible.
-#![allow(clippy::many_single_char_names)]
 #![warn(missing_docs)]
 
 //! # Lempel–Ziv–Storer–Szymanski de-/compression

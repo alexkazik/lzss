@@ -6,6 +6,8 @@ use crate::read_write::{Read, Write};
 use crate::LzssError;
 
 impl LzssDyn {
+  // Allow many single char names, this is done to copy the original code as close as possible.
+  #![allow(clippy::many_single_char_names)]
   #[inline(always)]
   pub(crate) fn compress_internal<R: Read, W: Write>(
     &self,

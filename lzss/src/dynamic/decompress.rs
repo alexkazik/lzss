@@ -5,6 +5,8 @@ use crate::dynamic::LzssDyn;
 use crate::{LzssError, Read, Write};
 
 impl LzssDyn {
+  // Allow many single char names, this is done to copy the original code as close as possible.
+  #[allow(clippy::many_single_char_names)]
   #[inline(always)]
   pub(crate) fn decompress_internal<R: Read, W: Write>(
     &self,
