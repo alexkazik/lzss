@@ -1,5 +1,16 @@
 # Changelog for lzss
 
+## 0.9.0 -- 2022-02-01
+
+* Use safe rust thanks to @cbiffle
+* Use const_panic always
+* Rename generic's de-/compress to de-/compress_stack
+* Improve dynamic decompression a bit
+* Generate the generic de-/compression from the dynamic code
+* Improve docs and readme
+* Fix clippy warnings
+* Add benchmark thanks to @cbiffle
+
 ## 0.8.2 -- 2021-09-26
 
 * Do not require `std` when building docs #1 thanks to @Cryptjar

@@ -7,6 +7,12 @@
 
 # crate lzss
 
+Breaking/important changes from 0.8 to 0.9
+
+* Feature `safe` added and enabled by default, see Safety below
+* Feature `const_panic` removed, it's now always enabled
+* Rename generic's de-/compress to de-/compress_stack
+
 <!-- cargo-rdme start -->
 
 ## Lempel–Ziv–Storer–Szymanski de-/compression
@@ -58,13 +64,13 @@ the following is required: `C = 0x20` in this library and `P = (1+EI+EJ) / 9` in
 With defaults (`std` and `safe`):
 ```toml
 [dependencies]
-lzss = "0.8"
+lzss = "0.9"
 ```
 
 With `no_std` (and without `safe`):
 ```toml
 [dependencies]
-lzss = { version = "0.8", default-features = false }
+lzss = { version = "0.9", default-features = false }
 ```
 
 ## Example

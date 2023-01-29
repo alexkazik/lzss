@@ -62,13 +62,13 @@
 //! With defaults (`std` and `safe`):
 //! ```toml
 //! [dependencies]
-//! lzss = "0.8"
+//! lzss = "0.9"
 //! ```
 //!
 //! With `no_std` (and without `safe`):
 //! ```toml
 //! [dependencies]
-//! lzss = { version = "0.8", default-features = false }
+//! lzss = { version = "0.9", default-features = false }
 //! ```
 //!
 //! # Example
