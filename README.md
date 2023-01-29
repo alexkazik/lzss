@@ -1,3 +1,4 @@
+[![Build Status](https://github.com/alexkazik/lzss/workflows/CI/badge.svg?branch=master&event=push)](https://github.com/alexkazik/lzss/actions?query=workflow%3ACI+branch%3Amaster+event%3Apush)
 [![Dependency status](https://deps.rs/repo/github/alexkazik/lzss/status.svg)](https://deps.rs/repo/github/alexkazik/lzss)
 [![crates.io](https://img.shields.io/crates/v/lzss.svg)](https://crates.io/crates/lzss)
 [![Downloads](https://img.shields.io/crates/d/lzss.svg)](https://crates.io/crates/lzss)

@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 19 * * 3'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - beta
+          - nightly
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: rustfmt, clippy
+
+      # builds (safe+std+alloc, std+alloc, alloc, nothing) (std implies alloc, tests require alloc)
+      - run: cargo build --release --all-features --tests
+      - run: cargo build --release --no-default-features --features std --tests
+      - run: cargo build --release --no-default-features --features alloc --tests
+      - run: cargo build --release --no-default-features
+
+      # clippy (safe+std+alloc, std+alloc, alloc, nothing) (std implies alloc, tests require alloc)
+      - run: cargo clippy --release --all-features --tests -- -D warnings
+      - run: cargo clippy --release --no-default-features --features std --tests -- -D warnings
+      - run: cargo clippy --release --no-default-features --features alloc --tests -- -D warnings
+      - run: cargo clippy --release --no-default-features -- -D warnings
+
+      # check formatting
+      - run: cargo fmt --all -- --check
+
+      # check readme
+      - run: cargo install cargo-rdme
+      - run: cargo rdme --check
+        working-directory: ./lzss
+
+      # tests (safe+std+alloc, alloc) (std implies alloc, tests require alloc)
+      - run: cargo test --release --all-features -- --include-ignored
+      - run: cargo test --release --no-default-features --features alloc -- --include-ignored
