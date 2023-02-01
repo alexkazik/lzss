@@ -19,7 +19,6 @@ impl LzssDyn {
         buffer: &mut [u8],
     ) -> Result<(), LzssError<R::Error, W::Error>> {
         // It is already ensured that EI+EJ are "reasonable"
-        // And for generic: 1<<EI == N and 2*N == N2
         // And for dynamic: the buffer has the correct size
 
         let mut bit_reader = BitReader::new(reader);

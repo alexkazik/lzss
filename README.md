@@ -75,7 +75,7 @@ lzss = { version = "0.9", default-features = false }
 
 ## Example
 ```rust
-type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
+type MyLzss = Lzss<10, 4, 0x20>;
 let input = b"Example Data";
 let mut output = [0; 30];
 let result = MyLzss::compress(

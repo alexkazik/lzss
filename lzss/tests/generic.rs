@@ -10,7 +10,7 @@ macro_rules! test_generic {
         fn $name() {
             debug_assert!(false, "Disabled in debug mode");
 
-            type MyLzss = Lzss<$ei, $ej, INIT_BYTE, { 1 << $ei }, { 2 << $ei }>;
+            type MyLzss = Lzss<$ei, $ej, INIT_BYTE>;
 
             // compress and decompress
             let compressed = MyLzss::compress_heap(

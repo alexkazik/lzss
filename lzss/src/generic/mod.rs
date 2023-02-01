@@ -15,29 +15,21 @@ mod decompress;
 /// * `EI` - The number of bits in the offset, usually `10..13`
 /// * `EJ` - The number of bits in the length, usually `4..5`
 /// * `C` - The initial fill byte of the buffer, usually `0x20` (space)
-/// * `N` - Equals `1 << EI`, the size of the buffer for [`Lzss::decompress`]
-/// * `N2` - Equals `2 << EI` (`N * 2`), the size of the buffer for [`Lzss::compress`]
 ///
 /// # Restrictions
 /// * `EJ` must be larger than `0`
 /// * `EI` must be larger than `EJ`
 /// * `EI + EJ` must be at least 8
 /// * `EI + EJ` must be 24 or less
-/// * `N` must be equal to `1 << EI`
-/// * `N2` must be equal to `2 << EI` (`N * 2`)
 ///
 /// All parameters are checked at compile-time.
 ///
 /// There is no runtime overhead since everything is checked during compile-time.
 ///
-/// # Limitations
-/// Since it's not possible to do const calculations on const generics all parameters
-/// have to be set.
-///
 /// # Example
 /// ```rust
 /// # use lzss::{Lzss, SliceReader, SliceWriterExact};
-/// type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
+/// type MyLzss = Lzss<10, 4, 0x20>;
 /// let input = b"Example Data";
 /// let mut output = [0; 14];
 /// let result = MyLzss::compress_stack(
@@ -47,27 +39,23 @@ mod decompress;
 /// assert!(result.is_ok()); // the output is exactly 14 bytes long
 /// ```
 
-pub struct Lzss<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>(
-    Infallible,
-);
+pub struct Lzss<const EI: usize, const EJ: usize, const C: u8>(Infallible);
 
-impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>
-    Lzss<EI, EJ, C, N, N2>
-{
+impl<const EI: usize, const EJ: usize, const C: u8> Lzss<EI, EJ, C> {
     /// Create a new [`LzssDyn`] with the parameter from this generic type.
     ///
     /// This is mainly useful for creating const [`LzssDyn`].
     ///
     /// ```
     /// # use lzss::{Lzss, LzssDyn};
-    /// type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
+    /// type MyLzss = Lzss<10, 4, 0x20>;
     /// const MY_DYN1: LzssDyn = MyLzss::as_dyn();
     /// // or
-    /// const MY_DYN2: LzssDyn = Lzss::<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>::as_dyn();
+    /// const MY_DYN2: LzssDyn = Lzss::<10, 4, 0x20>::as_dyn();
     /// ```
     #[must_use]
     pub const fn as_dyn() -> LzssDyn {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable"
 
         LzssDyn {
             ei: EI,
@@ -78,46 +66,55 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
 
     /// Compress the input data into the output.
     ///
-    /// The buffer, with `N2` bytes, is allocated on the stack.
+    /// The buffer, with `2 << EI` bytes, is allocated on the stack.
     #[inline(always)]
     #[deprecated(since = "0.9.0", note = "renamed to compress_stack")]
     pub fn compress<R: Read, W: Write>(
         reader: R,
         writer: W,
-    ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
+    ) -> Result<W::Output, LzssError<R::Error, W::Error>>
+    where
+        [(); 2 << EI]:,
+    {
         Self::compress_stack(reader, writer)
     }
 
     /// Compress the input data into the output.
     ///
-    /// The buffer, with `N2` bytes, is allocated on the stack.
+    /// The buffer, with `2 << EI` bytes, is allocated on the stack.
     pub fn compress_stack<R: Read, W: Write>(
         mut reader: R,
         mut writer: W,
-    ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+    ) -> Result<W::Output, LzssError<R::Error, W::Error>>
+    where
+        [(); 2 << EI]:,
+    {
+        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable"
 
-        let mut buffer = [C; N2];
+        let mut buffer = [C; 2 << EI];
         Self::compress_internal(&mut reader, &mut writer, &mut buffer)?;
         writer.finish().map_err(LzssError::WriteError)
     }
 
     /// Compress the input data into the output.
     ///
-    /// The buffer, with `N2` bytes, is allocated on the heap.
+    /// The buffer, with `2 << EI` bytes, is allocated on the heap.
     #[cfg_attr(docsrs, doc(cfg(any(feature = "alloc", feature = "std"))))]
     #[cfg(feature = "alloc")]
     pub fn compress_heap<R: Read, W: Write>(
         mut reader: R,
         mut writer: W,
-    ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+    ) -> Result<W::Output, LzssError<R::Error, W::Error>>
+    where
+        [(); 2 << EI]:,
+    {
+        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable"
 
-        let mut buffer = vec![C; N2];
+        let mut buffer = vec![C; 2 << EI];
         #[cfg(not(feature = "safe"))]
-        let buffer = unsafe { &mut *(buffer.as_mut_ptr().cast::<[u8; N2]>()) };
+        let buffer = unsafe { &mut *(buffer.as_mut_ptr().cast::<[u8; 2 << EI]>()) };
         #[cfg(feature = "safe")]
-        let buffer: &mut [u8; N2] = (&mut buffer[..]).try_into().unwrap();
+        let buffer: &mut [u8; 2 << EI] = (&mut buffer[..]).try_into().unwrap();
         Self::compress_internal(&mut reader, &mut writer, buffer)?;
         writer.finish().map_err(LzssError::WriteError)
     }
@@ -126,57 +123,66 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     pub fn compress_with_buffer<R: Read, W: Write>(
         mut reader: R,
         mut writer: W,
-        buffer: &mut [u8; N2],
+        buffer: &mut [u8; 2 << EI],
     ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable"
 
-        buffer[..N - Self::F].fill(C);
+        buffer[..Self::N - Self::F].fill(C);
         Self::compress_internal(&mut reader, &mut writer, buffer)?;
         writer.finish().map_err(LzssError::WriteError)
     }
 
     /// Decompress the input data into the output.
     ///
-    /// The buffer, with `N` bytes, is allocated on the stack.
+    /// The buffer, with `1 << EI` bytes, is allocated on the stack.
     #[inline(always)]
     #[deprecated(since = "0.9.0", note = "renamed to decompress_stack")]
     pub fn decompress<R: Read, W: Write>(
         reader: R,
         writer: W,
-    ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
+    ) -> Result<W::Output, LzssError<R::Error, W::Error>>
+    where
+        [(); 1 << EI]:,
+    {
         Self::decompress_stack(reader, writer)
     }
 
     /// Decompress the input data into the output.
     ///
-    /// The buffer, with `N` bytes, is allocated on the stack.
+    /// The buffer, with `1 << EI` bytes, is allocated on the stack.
     pub fn decompress_stack<R: Read, W: Write>(
         mut reader: R,
         mut writer: W,
-    ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+    ) -> Result<W::Output, LzssError<R::Error, W::Error>>
+    where
+        [(); 1 << EI]:,
+    {
+        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable"
 
-        let mut buffer: [u8; N] = [C; N];
+        let mut buffer: [u8; 1 << EI] = [C; 1 << EI];
         Self::decompress_internal(&mut reader, &mut writer, &mut buffer)?;
         writer.finish().map_err(LzssError::WriteError)
     }
 
     /// Decompress the input data into the output.
     ///
-    /// The buffer, with `N` bytes, is allocated on the heap.
+    /// The buffer, with `1 << EI` bytes, is allocated on the heap.
     #[cfg_attr(docsrs, doc(cfg(any(feature = "alloc", feature = "std"))))]
     #[cfg(feature = "alloc")]
     pub fn decompress_heap<R: Read, W: Write>(
         mut reader: R,
         mut writer: W,
-    ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+    ) -> Result<W::Output, LzssError<R::Error, W::Error>>
+    where
+        [(); 1 << EI]:,
+    {
+        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable"
 
-        let mut buffer = vec![C; N];
+        let mut buffer = vec![C; 1 << EI];
         #[cfg(not(feature = "safe"))]
-        let buffer = unsafe { &mut *(buffer.as_mut_ptr().cast::<[u8; N]>()) };
+        let buffer = unsafe { &mut *(buffer.as_mut_ptr().cast::<[u8; 1 << EI]>()) };
         #[cfg(feature = "safe")]
-        let buffer: &mut [u8; N] = (&mut buffer[..]).try_into().unwrap();
+        let buffer: &mut [u8; 1 << EI] = (&mut buffer[..]).try_into().unwrap();
         Self::decompress_internal(&mut reader, &mut writer, buffer)?;
         writer.finish().map_err(LzssError::WriteError)
     }
@@ -185,11 +191,11 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     pub fn decompress_with_buffer<R: Read, W: Write>(
         mut reader: R,
         mut writer: W,
-        buffer: &mut [u8; N],
+        buffer: &mut [u8; 1 << EI],
     ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable"
 
-        buffer[..N].fill(C);
+        buffer[..Self::N].fill(C);
         Self::decompress_internal(&mut reader, &mut writer, buffer)?;
         writer.finish().map_err(LzssError::WriteError)
     }
@@ -209,7 +215,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     /// The minimum offset is [`Lzss::MIN_OFFSET`], though if the offset is `Lzss::MIN_OFFSET + input_size/8`
     /// then the compression can't fail.
     pub fn compress_in_place(io: &mut [u8], offset: usize) -> (usize, Option<usize>) {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable"
 
         Self::compress_in_place_internal(io, offset)
     }
@@ -217,10 +223,11 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     /// The minimal offset when using `compress_in_place`.
     ///
     /// It's a little less than `N`.
-    pub const MIN_OFFSET: usize = (N - Self::F) + Self::MIN_GAP_SIZE;
+    pub const MIN_OFFSET: usize = (Self::N - Self::F) + Self::MIN_GAP_SIZE;
 
     // non-public helpers
 
+    pub(crate) const N: usize = 1 << EI;
     pub(crate) const P: usize = (1 + EI + EJ) / 9; /* If match length <= P then output one character */
     pub(crate) const F: usize = (1 << EJ) + Self::P; /* lookahead buffer size */
     pub(crate) const MIN_GAP_SIZE: usize = Self::P + 4;
@@ -238,13 +245,9 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         if EI + EJ > 24 {
             panic!("LZSS: Invalid EI, EJ, both together must be 24 or less")
         }
-        // the conversion to u32 is for the check to work on 16-bit systems
-        if (N as u32) != (1u32 << EI) {
-            panic!("LZSS: Invalid N, must be exactly 1<<EI")
-        }
-        // the conversion to u32 is for the check to work on 16-bit systems
-        if (N2 as u32) != 2 * (N as u32) {
-            panic!("LZSS: Invalid N2, must be exactly 2*N")
+        // check to work on small usize (16-bit systems)
+        if (Self::N as u32) != (1u32 << EI) {
+            panic!("LZSS: Invalid EI, too large for usize")
         }
         Ok(())
     };
@@ -257,7 +260,7 @@ mod tests {
     use crate::vec::VecWriter;
     use crate::ResultLzssErrorVoidExt;
 
-    type TestLZSS = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
+    type TestLZSS = Lzss<10, 4, 0x20>;
 
     const TEST_DATA: &[u8; 27] = b"Sample   Data   11221233123";
     const COMPRESSED_DATA: [u8; 26] = [

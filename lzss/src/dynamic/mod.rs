@@ -196,7 +196,7 @@ mod tests {
     use crate::vec::VecWriter;
     use crate::{Lzss, ResultLzssErrorVoidExt};
 
-    const TEST_LZSS: LzssDyn = Lzss::<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>::as_dyn();
+    const TEST_LZSS: LzssDyn = Lzss::<10, 4, 0x20>::as_dyn();
 
     const TEST_DATA: &[u8; 27] = b"Sample   Data   11221233123";
     const COMPRESSED_DATA: [u8; 26] = [

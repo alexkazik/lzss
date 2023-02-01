@@ -7,7 +7,7 @@ mod common;
 fn compress_in_place() {
     const EI: usize = 8;
     const EJ: usize = 4;
-    type MyLzss = Lzss<EI, EJ, INIT_BYTE, { 1 << EI }, { 2 << EI }>;
+    type MyLzss = Lzss<EI, EJ, INIT_BYTE>;
 
     let mut decompressed = vec![0; EXAMPLE_DATA.len()];
     for offset in MyLzss::MIN_OFFSET - 1..=2 << EI {
