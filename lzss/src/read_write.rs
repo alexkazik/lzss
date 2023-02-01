@@ -2,7 +2,7 @@
 pub trait Read {
     /// The error which can happen during a read operation.
     ///
-    /// Use [`Infallible`](core::convert::Infallible) when no error can be emitted.
+    /// Use [`!`](never) when no error can be emitted.
     type Error;
     /// Read a byte.
     ///
@@ -23,7 +23,7 @@ pub trait Write {
     type Output;
     /// The error which can happen during a write or finish operation.
     ///
-    /// Use [`Infallible`](core::convert::Infallible) when no error can be emitted.
+    /// Use [`!`](never) when no error can be emitted.
     type Error;
     /// Write a byte.
     fn write(&mut self, data: u8) -> Result<(), Self::Error>;

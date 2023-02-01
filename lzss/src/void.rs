@@ -1,7 +1,6 @@
 use crate::error::LzssError;
-use core::convert::Infallible;
 
-/// Conversion from `Result<T, LzssError<Infallible, Infallible>>` to `T`.
+/// Conversion from `Result<T, LzssError<!, !>>` to `T`.
 #[deprecated(since = "TBD", note = "renamed to UnwrapReadWriteExt")]
 pub trait ResultLzssErrorVoidExt<T>: Sized {
     /// Get the value out of a wrapper.
@@ -10,7 +9,7 @@ pub trait ResultLzssErrorVoidExt<T>: Sized {
 }
 
 #[allow(deprecated)]
-impl<T> ResultLzssErrorVoidExt<T> for Result<T, LzssError<Infallible, Infallible>> {
+impl<T> ResultLzssErrorVoidExt<T> for Result<T, LzssError<!, !>> {
     /// Get the value out of an always-ok Result.
     ///
     /// Never panics, since it is statically known to be Ok.
@@ -22,7 +21,7 @@ impl<T> ResultLzssErrorVoidExt<T> for Result<T, LzssError<Infallible, Infallible
     }
 }
 
-/// Conversion from `Result<T, LzssError<Infallible, E>>` to `Result<T, E>`.
+/// Conversion from `Result<T, LzssError<!, E>>` to `Result<T, E>`.
 ///
 /// It removes the statically known [`LzssError`] layer from the Result.
 #[deprecated(since = "TBD", note = "renamed to UnwrapReadExt")]
@@ -33,7 +32,7 @@ pub trait ResultLzssErrorVoidReadExt<E, T>: Sized {
 }
 
 #[allow(deprecated)]
-impl<E, T> ResultLzssErrorVoidReadExt<E, T> for Result<T, LzssError<Infallible, E>> {
+impl<E, T> ResultLzssErrorVoidReadExt<E, T> for Result<T, LzssError<!, E>> {
     /// Remove the [`LzssError`] layer from the Result.
     ///
     /// Never panics, since it is statically known to be Ok.
@@ -46,7 +45,7 @@ impl<E, T> ResultLzssErrorVoidReadExt<E, T> for Result<T, LzssError<Infallible, 
     }
 }
 
-/// Conversion from `Result<T, LzssError<E, Infallible>>` to `Result<T, E>`.
+/// Conversion from `Result<T, LzssError<E, !>>` to `Result<T, E>`.
 ///
 /// It removes the statically known [`LzssError`] layer from the Result.
 #[deprecated(since = "TBD", note = "renamed to UnwrapWriteExt")]
@@ -57,7 +56,7 @@ pub trait ResultLzssErrorVoidWriteExt<E, T>: Sized {
 }
 
 #[allow(deprecated)]
-impl<E, T> ResultLzssErrorVoidWriteExt<E, T> for Result<T, LzssError<E, Infallible>> {
+impl<E, T> ResultLzssErrorVoidWriteExt<E, T> for Result<T, LzssError<E, !>> {
     /// Remove the [`LzssError`] layer from the Result.
     ///
     /// Never panics, since it is statically known to be Ok.

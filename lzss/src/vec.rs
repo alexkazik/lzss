@@ -1,14 +1,13 @@
 use crate::read_write::Write;
 use alloc::vec::Vec;
-use core::convert::Infallible;
 
 /// Write into a vector.
 ///
 /// In order to write into a referenced vector use [`IOSimpleWriter`](crate::IOSimpleWriter),
 /// and [`SliceReader`](crate::SliceReader) to read from a vector.
 ///
-/// Use [`unwrap_write`](crate::UnwrapWriteExt::unwrap_write) to remove the `Infallible` from the result.
-/// Or [`unwrap_read_write`](crate::UnwrapReadWriteExt::unwrap_read_write) if also the reader produces `Infallible`.
+/// Use [`unwrap_write`](crate::UnwrapWriteExt::unwrap_write) to remove the `!` from the result.
+/// Or [`unwrap_read_write`](crate::UnwrapReadWriteExt::unwrap_read_write) if also the reader produces `!`.
 #[cfg_attr(docsrs, doc(cfg(any(feature = "alloc", feature = "std"))))]
 pub struct VecWriter(Vec<u8>);
 impl VecWriter {
@@ -26,7 +25,7 @@ impl Write for VecWriter {
     /// Returns the generated vector.
     type Output = Vec<u8>;
     /// No error can occur.
-    type Error = Infallible;
+    type Error = !;
     #[inline(always)]
     fn write(&mut self, data: u8) -> Result<(), Self::Error> {
         self.0.push(data);
