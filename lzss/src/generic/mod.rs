@@ -40,7 +40,7 @@ mod decompress;
 /// type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
 /// let input = b"Example Data";
 /// let mut output = [0; 14];
-/// let result = MyLzss::compress(
+/// let result = MyLzss::compress_stack(
 ///   SliceReader::new(input),
 ///   SliceWriterExact::new(&mut output),
 /// );
@@ -79,7 +79,19 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     /// Compress the input data into the output.
     ///
     /// The buffer, with `N2` bytes, is allocated on the stack.
+    #[inline(always)]
+    #[deprecated(since = "0.9.0", note = "renamed to compress_stack")]
     pub fn compress<R: Read, W: Write>(
+        reader: R,
+        writer: W,
+    ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
+        Self::compress_stack(reader, writer)
+    }
+
+    /// Compress the input data into the output.
+    ///
+    /// The buffer, with `N2` bytes, is allocated on the stack.
+    pub fn compress_stack<R: Read, W: Write>(
         mut reader: R,
         mut writer: W,
     ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
@@ -126,7 +138,19 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     /// Decompress the input data into the output.
     ///
     /// The buffer, with `N` bytes, is allocated on the stack.
+    #[inline(always)]
+    #[deprecated(since = "0.9.0", note = "renamed to decompress_stack")]
     pub fn decompress<R: Read, W: Write>(
+        reader: R,
+        writer: W,
+    ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
+        Self::decompress_stack(reader, writer)
+    }
+
+    /// Decompress the input data into the output.
+    ///
+    /// The buffer, with `N` bytes, is allocated on the stack.
+    pub fn decompress_stack<R: Read, W: Write>(
         mut reader: R,
         mut writer: W,
     ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
@@ -243,7 +267,7 @@ mod tests {
 
     #[test]
     fn test_decompress() {
-        let output = TestLZSS::decompress(
+        let output = TestLZSS::decompress_stack(
             SliceReader::new(&COMPRESSED_DATA),
             VecWriter::with_capacity(TEST_DATA.len()),
         )
@@ -265,7 +289,7 @@ mod tests {
 
     #[test]
     fn test_compress() {
-        let output = TestLZSS::compress(
+        let output = TestLZSS::compress_stack(
             SliceReader::new(TEST_DATA),
             VecWriter::with_capacity(COMPRESSED_DATA.len()),
         )
@@ -300,7 +324,7 @@ mod tests {
     fn test_compress_big() {
         let big_test_data = include_bytes!("mod.rs");
         // compress
-        let output1 = TestLZSS::compress(
+        let output1 = TestLZSS::compress_stack(
             SliceReader::new(big_test_data),
             VecWriter::with_capacity(big_test_data.len()),
         )
@@ -316,7 +340,7 @@ mod tests {
         // compare both
         assert_eq!(output1.as_slice(), &io[0..c]);
         // decompress
-        let output2 = TestLZSS::decompress(
+        let output2 = TestLZSS::decompress_stack(
             SliceReader::new(&io[0..c]),
             VecWriter::with_capacity(big_test_data.len()),
         )

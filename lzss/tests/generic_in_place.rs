@@ -18,7 +18,7 @@ fn compress_in_place() {
         // compress
         let (compressed_len, new_offset) = MyLzss::compress_in_place(compressed, offset);
         // decompress the successfully compressed data
-        match MyLzss::decompress(
+        match MyLzss::decompress_stack(
             SliceReader::new(&compressed[0..compressed_len]),
             SliceWriter::new(&mut decompressed),
         )

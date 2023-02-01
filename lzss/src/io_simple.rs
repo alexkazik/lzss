@@ -63,7 +63,7 @@ mod tests {
     fn test_simple_io() {
         let mut output = [0u8; 30];
         let mut output_cursor = Cursor::new(&mut output[..]);
-        let output_result = TestLZSS::compress(
+        let output_result = TestLZSS::compress_stack(
             IOSimpleReader::new(&mut Cursor::new(TEST_DATA)),
             IOSimpleWriter::new(&mut output_cursor),
         );
@@ -77,7 +77,7 @@ mod tests {
     fn test_simple_io_fail() {
         let mut output = [0u8; 10];
         let mut output_cursor = Cursor::new(&mut output[..]);
-        let output_result = TestLZSS::compress(
+        let output_result = TestLZSS::compress_stack(
             IOSimpleReader::new(&mut Cursor::new(TEST_DATA)),
             IOSimpleWriter::new(&mut output_cursor),
         );
