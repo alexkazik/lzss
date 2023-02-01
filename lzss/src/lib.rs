@@ -1,5 +1,6 @@
 #![cfg_attr(not(any(test, feature = "std")), no_std)]
 #![cfg_attr(feature = "safe", forbid(unsafe_code))]
+#![feature(never_type, exhaustive_patterns)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(missing_docs)]
 #![warn(clippy::pedantic)]
@@ -12,6 +13,7 @@
 #![allow(clippy::missing_panics_doc)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::manual_assert)]
+#![allow(clippy::deprecated_semver)]
 
 //! # Lempel–Ziv–Storer–Szymanski de-/compression
 //!
