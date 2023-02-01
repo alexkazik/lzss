@@ -1,5 +1,7 @@
 #![cfg_attr(not(any(test, feature = "std")), no_std)]
 #![cfg_attr(feature = "safe", forbid(unsafe_code))]
+#![allow(incomplete_features)]
+#![feature(generic_const_exprs)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(missing_docs)]
 #![warn(clippy::pedantic)]
