@@ -4,7 +4,7 @@ use void::Void;
 
 /// Read from a slice.
 ///
-/// ```
+/// ```rust
 /// # use lzss::*;
 /// let input_data = [10, 42];
 /// let mut input = SliceReader::new(&input_data);
@@ -66,7 +66,7 @@ impl std::error::Error for SliceWriteError {}
 ///
 /// Returns amount of written bytes.
 ///
-/// ```
+/// ```rust
 /// # use lzss::*;
 /// let mut buf = [0; 2];
 /// // underfull
@@ -129,7 +129,7 @@ impl<'a> Write for SliceWriter<'a> {
 
 /// Write into a slice which has the exact size of the result.
 ///
-/// ```
+/// ```rust
 /// # use lzss::*;
 /// let mut buf = [0; 2];
 /// // underfull

@@ -58,7 +58,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     ///
     /// This is mainly useful for creating const [`LzssDyn`].
     ///
-    /// ```
+    /// ```rust
     /// # use lzss::{Lzss, LzssDyn};
     /// type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
     /// const MY_DYN1: LzssDyn = MyLzss::as_dyn();
