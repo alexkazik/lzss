@@ -255,7 +255,7 @@ mod tests {
     use crate::generic::Lzss;
     use crate::slice::SliceReader;
     use crate::vec::VecWriter;
-    use crate::ResultLzssErrorVoidExt;
+    use crate::void::ResultLzssErrorVoidExt;
 
     type TestLZSS = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
 
