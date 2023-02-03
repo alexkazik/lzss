@@ -53,7 +53,9 @@ impl<'a, W: std::io::Write> Write for IOSimpleWriter<'a, W> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{IOSimpleReader, IOSimpleWriter, Lzss, LzssError};
+    use crate::error::LzssError;
+    use crate::generic::Lzss;
+    use crate::io_simple::{IOSimpleReader, IOSimpleWriter};
     use std::io::{Cursor, ErrorKind};
 
     type TestLZSS = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;

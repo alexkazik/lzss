@@ -192,9 +192,10 @@ impl std::error::Error for LzssDynError {}
 #[cfg(test)]
 mod tests {
     use crate::dynamic::LzssDyn;
+    use crate::generic::Lzss;
     use crate::slice::SliceReader;
     use crate::vec::VecWriter;
-    use crate::{Lzss, ResultLzssErrorVoidExt};
+    use crate::void::ResultLzssErrorVoidExt;
 
     const TEST_LZSS: LzssDyn = Lzss::<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>::as_dyn();
 
