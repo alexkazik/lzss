@@ -1,13 +1,12 @@
 use crate::error::LzssError;
-use void::{unreachable, Void};
 
-/// Conversion from `Result<T, LzssError<Void, Void>>` to `T`.
+/// Conversion from `Result<T, LzssError<!, !>>` to `T`.
 pub trait ResultLzssErrorVoidExt<T>: Sized {
     /// Get the value out of a wrapper.
     fn void_unwrap(self) -> T;
 }
 
-impl<T> ResultLzssErrorVoidExt<T> for Result<T, LzssError<Void, Void>> {
+impl<T> ResultLzssErrorVoidExt<T> for Result<T, LzssError<!, !>> {
     /// Get the value out of an always-ok Result.
     ///
     /// Never panics, since it is statically known to be Ok.
@@ -15,13 +14,11 @@ impl<T> ResultLzssErrorVoidExt<T> for Result<T, LzssError<Void, Void>> {
     fn void_unwrap(self) -> T {
         match self {
             Ok(val) => val,
-            Err(LzssError::ReadError(e)) => unreachable(e),
-            Err(LzssError::WriteError(e)) => unreachable(e),
         }
     }
 }
 
-/// Conversion from `Result<T, LzssError<Void, E>>` to `Result<T, E>`.
+/// Conversion from `Result<T, LzssError<!, E>>` to `Result<T, E>`.
 ///
 /// It removes the statically known [`LzssError`] layer from the Result.
 pub trait ResultLzssErrorVoidReadExt<E, T>: Sized {
@@ -29,7 +26,7 @@ pub trait ResultLzssErrorVoidReadExt<E, T>: Sized {
     fn void_read_unwrap(self) -> Result<T, E>;
 }
 
-impl<E, T> ResultLzssErrorVoidReadExt<E, T> for Result<T, LzssError<Void, E>> {
+impl<E, T> ResultLzssErrorVoidReadExt<E, T> for Result<T, LzssError<!, E>> {
     /// Remove the [`LzssError`] layer from the Result.
     ///
     /// Never panics, since it is statically known to be Ok.
@@ -37,13 +34,12 @@ impl<E, T> ResultLzssErrorVoidReadExt<E, T> for Result<T, LzssError<Void, E>> {
     fn void_read_unwrap(self) -> Result<T, E> {
         match self {
             Ok(val) => Ok(val),
-            Err(LzssError::ReadError(e)) => unreachable(e),
             Err(LzssError::WriteError(e)) => Err(e),
         }
     }
 }
 
-/// Conversion from `Result<T, LzssError<E, Void>>` to `Result<T, E>`.
+/// Conversion from `Result<T, LzssError<E, !>>` to `Result<T, E>`.
 ///
 /// It removes the statically known [`LzssError`] layer from the Result.
 pub trait ResultLzssErrorVoidWriteExt<E, T>: Sized {
@@ -51,7 +47,7 @@ pub trait ResultLzssErrorVoidWriteExt<E, T>: Sized {
     fn void_write_unwrap(self) -> Result<T, E>;
 }
 
-impl<E, T> ResultLzssErrorVoidWriteExt<E, T> for Result<T, LzssError<E, Void>> {
+impl<E, T> ResultLzssErrorVoidWriteExt<E, T> for Result<T, LzssError<E, !>> {
     /// Remove the [`LzssError`] layer from the Result.
     ///
     /// Never panics, since it is statically known to be Ok.
@@ -60,7 +56,6 @@ impl<E, T> ResultLzssErrorVoidWriteExt<E, T> for Result<T, LzssError<E, Void>> {
         match self {
             Ok(val) => Ok(val),
             Err(LzssError::ReadError(e)) => Err(e),
-            Err(LzssError::WriteError(e)) => unreachable(e),
         }
     }
 }

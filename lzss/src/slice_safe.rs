@@ -1,5 +1,4 @@
 use crate::read_write::{Read, Write};
-use void::Void;
 
 /// Read from a slice.
 ///
@@ -12,8 +11,8 @@ use void::Void;
 /// assert_eq!(input.read(), Ok(None));
 /// ```
 ///
-/// Use [`void_read_unwrap`](crate::ResultLzssErrorVoidReadExt::void_read_unwrap) to remove the Void from the result.
-/// Or [`void_unwrap`](crate::ResultLzssErrorVoidExt::void_unwrap) if also the writer produces Void.
+/// Use [`void_read_unwrap`](crate::ResultLzssErrorVoidReadExt::void_read_unwrap) to remove the `!` from the result.
+/// Or [`void_unwrap`](crate::ResultLzssErrorVoidExt::void_unwrap) if also the writer produces `!`.
 pub struct SliceReader<'a> {
     data: &'a [u8],
 }
@@ -27,7 +26,7 @@ impl<'a> SliceReader<'a> {
 }
 impl Read for SliceReader<'_> {
     /// No error can occur.
-    type Error = Void;
+    type Error = !;
     #[inline(always)]
     fn read(&mut self) -> Result<Option<u8>, Self::Error> {
         if let Some((&first, rest)) = self.data.split_first() {

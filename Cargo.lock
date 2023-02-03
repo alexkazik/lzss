@@ -240,7 +240,6 @@ name = "lzss"
 version = "0.9.1"
 dependencies = [
  "criterion",
- "void",
 ]
 
 [[package]]

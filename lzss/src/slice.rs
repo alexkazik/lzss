@@ -1,7 +1,6 @@
 use crate::read_write::{Read, Write};
 use core::marker::PhantomData;
 use core::ptr;
-use void::Void;
 
 /// Read from a slice.
 ///
@@ -14,8 +13,8 @@ use void::Void;
 /// assert_eq!(input.read(), Ok(None));
 /// ```
 ///
-/// Use [`void_read_unwrap`](crate::ResultLzssErrorVoidReadExt::void_read_unwrap) to remove the Void from the result.
-/// Or [`void_unwrap`](crate::ResultLzssErrorVoidExt::void_unwrap) if also the writer produces Void.
+/// Use [`void_read_unwrap`](crate::ResultLzssErrorVoidReadExt::void_read_unwrap) to remove the `!` from the result.
+/// Or [`void_unwrap`](crate::ResultLzssErrorVoidExt::void_unwrap) if also the writer produces `!`.
 pub struct SliceReader<'a> {
     pos: *const u8,
     end: *const u8,
@@ -36,7 +35,7 @@ impl<'a> SliceReader<'a> {
 }
 impl Read for SliceReader<'_> {
     /// No error can occur.
-    type Error = Void;
+    type Error = !;
     #[inline(always)]
     fn read(&mut self) -> Result<Option<u8>, Self::Error> {
         if ptr::eq(self.pos, self.end) {
