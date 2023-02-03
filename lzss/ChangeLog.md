@@ -1,6 +1,6 @@
 # Changelog for lzss
 
-## 0.9.0 -- 2022-02-01
+## 0.9.0 -- 2023-02-01
 
 * Use safe rust thanks to @cbiffle
 * Use const_panic always
