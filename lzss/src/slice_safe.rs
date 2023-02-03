@@ -12,8 +12,8 @@ use void::Void;
 /// assert_eq!(input.read(), Ok(None));
 /// ```
 ///
-/// Use [`void_read_unwrap`](crate::ResultLzssErrorVoidReadExt) to remove the Void from the result.
-/// Or [`void_unwrap`](crate::ResultLzssErrorVoidExt) if also the writer produces Void.
+/// Use [`unwrap_read`](crate::UnwrapReadExt::unwrap_read) to remove the Void from the result.
+/// Or [`unwrap_read_write`](crate::UnwrapReadWriteExt::unwrap_read_write) if also the writer produces Void.
 pub struct SliceReader<'a> {
     data: &'a [u8],
 }

@@ -1,5 +1,5 @@
 use common::{EXAMPLE_DATA, INIT_BYTE};
-use lzss::{LzssDyn, ResultLzssErrorVoidExt, SliceReader, VecWriter};
+use lzss::{LzssDyn, SliceReader, UnwrapReadWriteExt, VecWriter};
 
 mod common;
 
@@ -38,13 +38,13 @@ fn dynamic() {
                     SliceReader::new(EXAMPLE_DATA),
                     VecWriter::with_capacity(EXAMPLE_DATA.len()),
                 )
-                .void_unwrap();
+                .unwrap_read_write();
             let decoded = lzss
                 .decompress(
                     SliceReader::new(&encoded),
                     VecWriter::with_capacity(EXAMPLE_DATA.len()),
                 )
-                .void_unwrap();
+                .unwrap_read_write();
             assert_eq!(
                 EXAMPLE_DATA,
                 &decoded[..],

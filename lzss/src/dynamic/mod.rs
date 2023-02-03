@@ -19,14 +19,14 @@ mod decompress;
 ///
 /// # Example
 /// ```rust
-/// # use lzss::{LzssDyn, LzssDynError, ResultLzssErrorVoidExt, SliceReader, VecWriter};
+/// # use lzss::{LzssDyn, LzssDynError, UnwrapReadWriteExt, SliceReader, VecWriter};
 /// let my_lzss = LzssDyn::new(10, 4, 0x20)?;
 /// let input = b"Example Data";
 /// let result = my_lzss.compress(
 ///   SliceReader::new(input),
 ///   VecWriter::with_capacity(30),
 /// );
-/// assert_eq!(result.void_unwrap().len(), 14); // the output is 14 bytes long
+/// assert_eq!(result.unwrap_read_write().len(), 14); // the output is 14 bytes long
 /// # Ok::<(), LzssDynError>(())
 /// ```
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -194,7 +194,7 @@ mod tests {
     use crate::dynamic::LzssDyn;
     use crate::slice::SliceReader;
     use crate::vec::VecWriter;
-    use crate::{Lzss, ResultLzssErrorVoidExt};
+    use crate::{Lzss, UnwrapReadWriteExt};
 
     const TEST_LZSS: LzssDyn = Lzss::<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>::as_dyn();
 
@@ -211,7 +211,7 @@ mod tests {
                 SliceReader::new(&COMPRESSED_DATA),
                 VecWriter::with_capacity(TEST_DATA.len()),
             )
-            .void_unwrap();
+            .unwrap_read_write();
         assert_eq!(output.as_slice(), TEST_DATA);
     }
 
@@ -222,7 +222,7 @@ mod tests {
                 SliceReader::new(TEST_DATA),
                 VecWriter::with_capacity(COMPRESSED_DATA.len()),
             )
-            .void_unwrap();
+            .unwrap_read_write();
         assert_eq!(output.as_slice(), COMPRESSED_DATA);
     }
 
@@ -235,14 +235,14 @@ mod tests {
                 SliceReader::new(big_test_data),
                 VecWriter::with_capacity(big_test_data.len()),
             )
-            .void_unwrap();
+            .unwrap_read_write();
         // decompress
         let output2 = TEST_LZSS
             .decompress(
                 SliceReader::new(&output1),
                 VecWriter::with_capacity(big_test_data.len()),
             )
-            .void_unwrap();
+            .unwrap_read_write();
         assert_eq!(output2.as_slice(), big_test_data);
     }
 
@@ -255,7 +255,7 @@ mod tests {
                 VecWriter::with_capacity(TEST_DATA.len()),
                 &mut buffer,
             )
-            .void_unwrap();
+            .unwrap_read_write();
         assert_eq!(output.as_slice(), TEST_DATA);
     }
 
@@ -268,7 +268,7 @@ mod tests {
                 VecWriter::with_capacity(COMPRESSED_DATA.len()),
                 &mut buffer,
             )
-            .void_unwrap();
+            .unwrap_read_write();
         assert_eq!(output.as_slice(), COMPRESSED_DATA);
     }
 }
