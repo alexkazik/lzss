@@ -1,7 +1,7 @@
 use crate::error::LzssError;
-use void::{unreachable, Void};
+use core::convert::Infallible;
 
-/// Conversion from `Result<T, LzssError<Void, Void>>` to `T`.
+/// Conversion from `Result<T, LzssError<Infallible, Infallible>>` to `T`.
 #[deprecated(since = "TBD", note = "renamed to UnwrapReadWriteExt")]
 pub trait ResultLzssErrorVoidExt<T>: Sized {
     /// Get the value out of a wrapper.
@@ -10,7 +10,7 @@ pub trait ResultLzssErrorVoidExt<T>: Sized {
 }
 
 #[allow(deprecated)]
-impl<T> ResultLzssErrorVoidExt<T> for Result<T, LzssError<Void, Void>> {
+impl<T> ResultLzssErrorVoidExt<T> for Result<T, LzssError<Infallible, Infallible>> {
     /// Get the value out of an always-ok Result.
     ///
     /// Never panics, since it is statically known to be Ok.
@@ -18,13 +18,11 @@ impl<T> ResultLzssErrorVoidExt<T> for Result<T, LzssError<Void, Void>> {
     fn void_unwrap(self) -> T {
         match self {
             Ok(val) => val,
-            Err(LzssError::ReadError(e)) => unreachable(e),
-            Err(LzssError::WriteError(e)) => unreachable(e),
         }
     }
 }
 
-/// Conversion from `Result<T, LzssError<Void, E>>` to `Result<T, E>`.
+/// Conversion from `Result<T, LzssError<Infallible, E>>` to `Result<T, E>`.
 ///
 /// It removes the statically known [`LzssError`] layer from the Result.
 #[deprecated(since = "TBD", note = "renamed to UnwrapReadExt")]
@@ -35,7 +33,7 @@ pub trait ResultLzssErrorVoidReadExt<E, T>: Sized {
 }
 
 #[allow(deprecated)]
-impl<E, T> ResultLzssErrorVoidReadExt<E, T> for Result<T, LzssError<Void, E>> {
+impl<E, T> ResultLzssErrorVoidReadExt<E, T> for Result<T, LzssError<Infallible, E>> {
     /// Remove the [`LzssError`] layer from the Result.
     ///
     /// Never panics, since it is statically known to be Ok.
@@ -43,13 +41,12 @@ impl<E, T> ResultLzssErrorVoidReadExt<E, T> for Result<T, LzssError<Void, E>> {
     fn void_read_unwrap(self) -> Result<T, E> {
         match self {
             Ok(val) => Ok(val),
-            Err(LzssError::ReadError(e)) => unreachable(e),
             Err(LzssError::WriteError(e)) => Err(e),
         }
     }
 }
 
-/// Conversion from `Result<T, LzssError<E, Void>>` to `Result<T, E>`.
+/// Conversion from `Result<T, LzssError<E, Infallible>>` to `Result<T, E>`.
 ///
 /// It removes the statically known [`LzssError`] layer from the Result.
 #[deprecated(since = "TBD", note = "renamed to UnwrapWriteExt")]
@@ -60,7 +57,7 @@ pub trait ResultLzssErrorVoidWriteExt<E, T>: Sized {
 }
 
 #[allow(deprecated)]
-impl<E, T> ResultLzssErrorVoidWriteExt<E, T> for Result<T, LzssError<E, Void>> {
+impl<E, T> ResultLzssErrorVoidWriteExt<E, T> for Result<T, LzssError<E, Infallible>> {
     /// Remove the [`LzssError`] layer from the Result.
     ///
     /// Never panics, since it is statically known to be Ok.
@@ -69,7 +66,6 @@ impl<E, T> ResultLzssErrorVoidWriteExt<E, T> for Result<T, LzssError<E, Void>> {
         match self {
             Ok(val) => Ok(val),
             Err(LzssError::ReadError(e)) => Err(e),
-            Err(LzssError::WriteError(e)) => unreachable(e),
         }
     }
 }

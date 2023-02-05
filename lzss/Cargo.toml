@@ -9,14 +9,11 @@ license = "MIT"
 keywords = ["lzss", "compression", "no_std"]
 categories = ["compression", "no-std"]
 
-[dependencies]
-void = { version = "1.0.2", default-features = false }
-
 [features]
 default = ['std', 'safe']
 alloc = []
 safe = []
-std = ['void/std', 'alloc']
+std = ['alloc']
 
 [package.metadata.docs.rs]
 all-features = true

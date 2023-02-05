@@ -1,6 +1,6 @@
 use crate::read_write::{Read, Write};
+use core::convert::Infallible;
 use core::marker::PhantomData;
-use void::Void;
 
 /// Read from a slice.
 ///
@@ -13,8 +13,8 @@ use void::Void;
 /// assert_eq!(input.read(), Ok(None));
 /// ```
 ///
-/// Use [`unwrap_read`](crate::UnwrapReadExt::unwrap_read) to remove the Void from the result.
-/// Or [`unwrap_read_write`](crate::UnwrapReadWriteExt::unwrap_read_write) if also the writer produces Void.
+/// Use [`unwrap_read`](crate::UnwrapReadExt::unwrap_read) to remove the `Infallible` from the result.
+/// Or [`unwrap_read_write`](crate::UnwrapReadWriteExt::unwrap_read_write) if also the writer produces `Infallible`.
 pub struct SliceReader<'a> {
     pos: *const u8,
     end: *const u8,
@@ -35,7 +35,7 @@ impl<'a> SliceReader<'a> {
 }
 impl<'a> Read for SliceReader<'a> {
     /// No error can occur.
-    type Error = Void;
+    type Error = Infallible;
     #[inline(always)]
     fn read(&mut self) -> Result<Option<u8>, Self::Error> {
         if self.pos == self.end {
