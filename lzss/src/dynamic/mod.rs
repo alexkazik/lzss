@@ -48,9 +48,9 @@ impl LzssDyn {
         } else if ej >= ei {
             Err(LzssDynError::EiNotLargerThanEj)
         } else if ei + ej < 8 {
-            Err(LzssDynError::EiEjToSmall)
+            Err(LzssDynError::EiEjTooSmall)
         } else if ei + ej > 24 {
-            Err(LzssDynError::EiEjToLarge)
+            Err(LzssDynError::EiEjTooLarge)
         } else if (ei as u32) + 1 >= usize::BITS {
             Err(LzssDynError::EiTooLargeForUsize)
         } else {
@@ -166,9 +166,9 @@ pub enum LzssDynError {
     /// Invalid EI, must be larger than EJ.
     EiNotLargerThanEj,
     /// Invalid EI, EJ, both together must be 8 or more.
-    EiEjToSmall,
+    EiEjTooSmall,
     /// Invalid EI, EJ, both together must be 24 or less.
-    EiEjToLarge,
+    EiEjTooLarge,
     /// Invalid EI, too large for usize
     EiTooLargeForUsize,
 }
@@ -178,10 +178,10 @@ impl core::fmt::Display for LzssDynError {
         match self {
             LzssDynError::EjIsZero => f.write_str("Invalid EJ, must be larger than 0"),
             LzssDynError::EiNotLargerThanEj => f.write_str("Invalid EI, must be larger than EJ"),
-            LzssDynError::EiEjToSmall => {
+            LzssDynError::EiEjTooSmall => {
                 f.write_str("Invalid EI, EJ, both together must be 8 or more")
             }
-            LzssDynError::EiEjToLarge => {
+            LzssDynError::EiEjTooLarge => {
                 f.write_str("Invalid EI, EJ, both together must be 24 or less")
             }
             LzssDynError::EiTooLargeForUsize => f.write_str("Invalid EI, too large for usize"),
