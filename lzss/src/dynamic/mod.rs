@@ -49,7 +49,7 @@ impl LzssDyn {
             Err(LzssDynError::EiNotLargerThanEj)
         } else if ei + ej < 8 {
             Err(LzssDynError::EiEjToSmall)
-        } else if ei + ej > 24 {
+        } else if ei + ej > 24 || (ei as u32) + 1 >= usize::BITS {
             Err(LzssDynError::EiEjToLarge)
         } else {
             Ok(LzssDyn { ei, ej, c })

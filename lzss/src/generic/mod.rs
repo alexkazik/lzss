@@ -238,12 +238,14 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         if EI + EJ > 24 {
             panic!("LZSS: Invalid EI, EJ, both together must be 24 or less")
         }
-        // the conversion to u32 is for the check to work on 16-bit systems
-        if (N as u32) != (1u32 << EI) {
+        // check if buffer size < usize
+        if (EI as u32) + 1 >= usize::BITS {
+            panic!("LZSS: Invalid EI, too large for usize")
+        }
+        if N != 1usize << EI {
             panic!("LZSS: Invalid N, must be exactly 1<<EI")
         }
-        // the conversion to u32 is for the check to work on 16-bit systems
-        if (N2 as u32) != 2 * (N as u32) {
+        if N2 != 2 * N {
             panic!("LZSS: Invalid N2, must be exactly 2*N")
         }
         Ok(())
