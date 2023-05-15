@@ -67,7 +67,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     /// ```
     #[must_use]
     pub const fn as_dyn() -> LzssDyn {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _: Result<(), ()> = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
 
         LzssDyn {
             ei: EI,
@@ -95,7 +95,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         mut reader: R,
         mut writer: W,
     ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _: Result<(), ()> = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
 
         let mut buffer = [C; N2];
         Self::compress_internal(&mut reader, &mut writer, &mut buffer)?;
@@ -111,7 +111,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         mut reader: R,
         mut writer: W,
     ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _: Result<(), ()> = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
 
         let mut buffer = vec![C; N2];
         #[cfg(not(feature = "safe"))]
@@ -128,7 +128,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         mut writer: W,
         buffer: &mut [u8; N2],
     ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _: Result<(), ()> = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
 
         buffer[..N - Self::F].fill(C);
         Self::compress_internal(&mut reader, &mut writer, buffer)?;
@@ -154,7 +154,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         mut reader: R,
         mut writer: W,
     ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _: Result<(), ()> = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
 
         let mut buffer: [u8; N] = [C; N];
         Self::decompress_internal(&mut reader, &mut writer, &mut buffer)?;
@@ -170,7 +170,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         mut reader: R,
         mut writer: W,
     ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _: Result<(), ()> = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
 
         let mut buffer = vec![C; N];
         #[cfg(not(feature = "safe"))]
@@ -187,7 +187,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
         mut writer: W,
         buffer: &mut [u8; N],
     ) -> Result<W::Output, LzssError<R::Error, W::Error>> {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _: Result<(), ()> = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
 
         buffer[..N].fill(C);
         Self::decompress_internal(&mut reader, &mut writer, buffer)?;
@@ -209,7 +209,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     /// The minimum offset is [`Lzss::MIN_OFFSET`], though if the offset is `Lzss::MIN_OFFSET + input_size/8`
     /// then the compression can't fail.
     pub fn compress_in_place(io: &mut [u8], offset: usize) -> (usize, Option<usize>) {
-        let _ = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
+        let _: Result<(), ()> = Self::ASSERT_PARAMETERS; // This ensures that EI+EJ are "reasonable", 1<<EI == N and 2*N == N2
 
         Self::compress_in_place_internal(io, offset)
     }
