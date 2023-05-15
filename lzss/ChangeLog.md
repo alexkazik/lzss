@@ -2,6 +2,12 @@
 
 ## 0.9.0 -- 2023-02-01
 
+* Check if the buffer fits into usize
+* Fix typos
+* Fix clippy warnings
+
+## 0.9.0 -- 2023-02-01
+
 * Use safe rust thanks to @cbiffle
 * Use const_panic always
 * Rename generic's de-/compress to de-/compress_stack
