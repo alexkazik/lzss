@@ -333,8 +333,7 @@ mod tests {
         .void_unwrap();
         // compress_in_place
         let offset: usize = TestLZSS::MIN_OFFSET + big_test_data.len() / 8;
-        let mut io = Vec::new();
-        io.resize(offset + big_test_data.len(), 0);
+        let mut io = vec![0; offset + big_test_data.len()];
         let io = io.as_mut_slice();
         io[offset..].copy_from_slice(big_test_data);
         let (c, u) = TestLZSS::compress_in_place(io, offset);
