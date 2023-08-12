@@ -3,3 +3,4 @@ members = [
     "lzss",
     "lzss-cli",
 ]
+resolver = "2"
