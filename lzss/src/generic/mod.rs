@@ -2,7 +2,7 @@ use crate::dynamic::LzssDyn;
 use crate::error::LzssError;
 use crate::read_write::{Read, Write};
 use core::convert::Infallible;
-#[cfg(feature = "safe")]
+#[cfg(all(feature = "safe", not(feature = "std")))]
 use core::convert::TryInto;
 
 mod compress;

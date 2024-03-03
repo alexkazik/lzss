@@ -1,4 +1,5 @@
 use crate::read_write::Write;
+#[cfg(not(any(test, feature = "std")))]
 use alloc::vec::Vec;
 use void::Void;
 

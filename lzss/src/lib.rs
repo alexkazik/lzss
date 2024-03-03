@@ -12,6 +12,7 @@
 #![allow(clippy::missing_panics_doc)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::manual_assert)]
+#![allow(rustdoc::redundant_explicit_links)]
 
 //! # Lempel–Ziv–Storer–Szymanski de-/compression
 //!
