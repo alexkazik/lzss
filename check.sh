@@ -3,6 +3,8 @@
 TOOLCHAIN=${1:-+nightly}
 echo Using toolchain $TOOLCHAIN
 
+set -x
+
 # builds (safe+std+alloc, std+alloc, alloc, nothing) (std implies alloc, tests require alloc)
 cargo $TOOLCHAIN build --release --all-features --tests || exit 1
 cargo $TOOLCHAIN build --release --no-default-features --features std --tests || exit 1
