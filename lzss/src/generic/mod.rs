@@ -252,7 +252,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
     };
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "alloc"))]
 mod tests {
     use crate::generic::Lzss;
     use crate::slice::SliceReader;

@@ -1,3 +1,5 @@
+#![cfg(feature = "alloc")]
+
 use common::{EXAMPLE_DATA, INIT_BYTE};
 use lzss::{LzssDyn, ResultLzssErrorVoidExt, SliceReader, VecWriter};
 

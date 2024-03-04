@@ -1,4 +1,4 @@
-#![cfg_attr(not(any(test, feature = "std")), no_std)]
+#![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "safe", forbid(unsafe_code))]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(missing_docs)]
@@ -100,11 +100,11 @@ extern crate alloc;
 pub use crate::dynamic::{LzssDyn, LzssDynError};
 pub use crate::error::LzssError;
 pub use crate::generic::Lzss;
-#[cfg(any(test, feature = "std"))]
+#[cfg(feature = "std")]
 pub use crate::io_simple::{IOSimpleReader, IOSimpleWriter};
 pub use crate::read_write::{Read, Write};
 pub use crate::slice::{SliceReader, SliceWriteError, SliceWriter, SliceWriterExact};
-#[cfg(any(test, feature = "alloc"))]
+#[cfg(feature = "alloc")]
 pub use crate::vec::VecWriter;
 pub use crate::void::{
     ResultLzssErrorVoidExt, ResultLzssErrorVoidReadExt, ResultLzssErrorVoidWriteExt,
@@ -114,12 +114,12 @@ mod bits;
 mod dynamic;
 mod error;
 mod generic;
-#[cfg(any(test, feature = "std"))]
+#[cfg(feature = "std")]
 mod io_simple;
 mod macros;
 mod read_write;
 #[cfg_attr(feature = "safe", path = "slice_safe.rs")]
 mod slice;
-#[cfg(any(test, feature = "alloc"))]
+#[cfg(feature = "alloc")]
 mod vec;
 mod void;

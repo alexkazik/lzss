@@ -99,7 +99,7 @@ impl LzssDyn {
     ///
     /// The buffer, with `2 * (1 << EI)` bytes, is allocated on the heap.
     #[cfg_attr(docsrs, doc(cfg(any(feature = "alloc", feature = "std"))))]
-    #[cfg(any(test, feature = "alloc"))]
+    #[cfg(feature = "alloc")]
     pub fn compress<R: Read, W: Write>(
         &self,
         mut reader: R,
@@ -129,7 +129,7 @@ impl LzssDyn {
     ///
     /// The buffer, with `1 << EI` bytes, is allocated on the heap.
     #[cfg_attr(docsrs, doc(cfg(any(feature = "alloc", feature = "std"))))]
-    #[cfg(any(test, feature = "alloc"))]
+    #[cfg(feature = "alloc")]
     pub fn decompress<R: Read, W: Write>(
         &self,
         mut reader: R,
@@ -186,10 +186,10 @@ impl core::fmt::Display for LzssDynError {
 
 /// Implementation of [`Error`](std::error::Error) for [`LzssDynError`]
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
-#[cfg(any(test, feature = "std"))]
+#[cfg(feature = "std")]
 impl std::error::Error for LzssDynError {}
 
-#[cfg(test)]
+#[cfg(all(test, feature = "alloc"))]
 mod tests {
     use crate::dynamic::LzssDyn;
     use crate::generic::Lzss;
