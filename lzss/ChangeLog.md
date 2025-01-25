@@ -1,6 +1,6 @@
 # Changelog for lzss
 
-## 0.9.0 -- 2023-02-01
+## 0.9.1 -- 2023-05-15
 
 * Check if the buffer fits into usize
 * Fix typos
@@ -25,7 +25,7 @@
 
 * Fixed a potential buffer overflow
 * Several small improvements
-* Support alloc instead of std where possible 
+* Support alloc instead of std where possible
 * Tests
 
 ## 0.8.0 -- 2021-06-07
