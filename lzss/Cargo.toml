@@ -8,6 +8,7 @@ repository = "https://github.com/alexkazik/lzss"
 license = "MIT"
 keywords = ["lzss", "compression", "no_std"]
 categories = ["compression", "no-std"]
+rust-version = "1.64.0"
 
 [dependencies]
 void = { version = "1.0.2", default-features = false }
