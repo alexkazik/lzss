@@ -25,7 +25,7 @@ impl<'a> SliceReader<'a> {
         Self { data }
     }
 }
-impl<'a> Read for SliceReader<'a> {
+impl Read for SliceReader<'_> {
     /// No error can occur.
     type Error = Void;
     #[inline(always)]
@@ -88,7 +88,7 @@ impl<'a> SliceWriter<'a> {
     }
 }
 
-impl<'a> Write for SliceWriter<'a> {
+impl Write for SliceWriter<'_> {
     /// Returns written bytes.
     type Output = usize;
     /// In case of an overflow this error is returned.
@@ -141,7 +141,7 @@ impl<'a> SliceWriterExact<'a> {
     }
 }
 
-impl<'a> Write for SliceWriterExact<'a> {
+impl Write for SliceWriterExact<'_> {
     /// Returns always `()`.
     type Output = ();
     /// In case of an under- or overflow this error is returned.

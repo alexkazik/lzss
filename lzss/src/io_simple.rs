@@ -15,7 +15,7 @@ impl<'a, R: std::io::Read> IOSimpleReader<'a, R> {
         IOSimpleReader(stream)
     }
 }
-impl<'a, R: std::io::Read> Read for IOSimpleReader<'a, R> {
+impl<R: std::io::Read> Read for IOSimpleReader<'_, R> {
     type Error = Error;
     fn read(&mut self) -> Result<Option<u8>, Self::Error> {
         let mut buf = [0; 1];
@@ -38,7 +38,7 @@ impl<'a, W: std::io::Write> IOSimpleWriter<'a, W> {
         IOSimpleWriter(stream)
     }
 }
-impl<'a, W: std::io::Write> Write for IOSimpleWriter<'a, W> {
+impl<W: std::io::Write> Write for IOSimpleWriter<'_, W> {
     type Output = ();
     type Error = Error;
     fn write(&mut self, data: u8) -> Result<(), Self::Error> {

@@ -46,7 +46,6 @@ mod decompress;
 /// );
 /// assert!(result.is_ok()); // the output is exactly 14 bytes long
 /// ```
-
 pub struct Lzss<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: usize>(
     Infallible,
 );
