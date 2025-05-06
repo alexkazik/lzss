@@ -15,6 +15,7 @@ struct Args {
     ei: usize,
     ej: usize,
     c: u8,
+    p: Option<usize>,
 }
 
 fn parse_dec_or_hex_u8(i: &str) -> Result<u8, ParseIntError> {
@@ -36,7 +37,7 @@ fn parse_args() -> Result<Args, &'static str> {
         _ => Err("unknown command, use 'e' or 'd'"),
     }?;
     let params: Vec<_> = args[2].split(',').collect();
-    if params.len() != 3 {
+    if params.len() < 3 || params.len() > 4 {
         return Err("not exactly 3 compression parameters found");
     }
     let ei = params[0]
@@ -48,8 +49,24 @@ fn parse_args() -> Result<Args, &'static str> {
         .parse::<usize>()
         .map_err(|_| "can't read ej")?;
     let c = parse_dec_or_hex_u8(params[2].trim()).map_err(|_| "can't read c")?;
+    let p = if params.len() == 4 {
+        Some(
+            params[3]
+                .trim()
+                .parse::<usize>()
+                .map_err(|_| "can't read p")?,
+        )
+    } else {
+        None
+    };
 
-    Ok(Args { encode, ei, ej, c })
+    Ok(Args {
+        encode,
+        ei,
+        ej,
+        c,
+        p,
+    })
 }
 
 struct ReadCounter<T>(T, Rc<RefCell<usize>>);
@@ -91,11 +108,11 @@ fn main() {
     let args = parse_args().unwrap_or_else(|err| {
         let name = std::env::args().next().unwrap();
         eprintln!("error: {err}");
-        eprintln!("usage: {name} <'e'|'d'> <ei,ej,c>");
+        eprintln!("usage: {name} <'e'|'d'> <ei,ej,c[,p]>");
         eprintln!("example: {name} e 10,4,0x20");
         exit(1)
     });
-    let lzss = LzssDyn::new(args.ei, args.ej, args.c).unwrap_or_else(|err| {
+    let lzss = LzssDyn::new_with_p(args.ei, args.ej, args.c, args.p).unwrap_or_else(|err| {
         eprintln!("error: {err}");
         exit(1)
     });

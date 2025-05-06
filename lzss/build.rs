@@ -21,7 +21,7 @@ fn run_template(path: PathBuf, source: &str, buffer: &str) -> Result<(), Error> 
             .replace("self.ej", "EJ")
             .replace("self.f()", "Self::F")
             .replace("self.n()", "N")
-            .replace("self.p()", "Self::P")
+            .replace("self.p", "Self::P")
             ;
         l.push('\n');
         file.write_all(l.as_bytes())?;

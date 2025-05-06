@@ -1,4 +1,4 @@
-use crate::dynamic::LzssDyn;
+use crate::dynamic::{default_p, LzssDyn};
 use crate::error::LzssError;
 use crate::read_write::{Read, Write};
 use core::convert::Infallible;
@@ -17,6 +17,7 @@ mod decompress;
 /// * `C` - The initial fill byte of the buffer, usually `0x20` (space)
 /// * `N` - Equals `1 << EI`, the size of the buffer for [`Lzss::decompress_stack`]
 /// * `N2` - Equals `2 << EI` (`N * 2`), the size of the buffer for [`Lzss::compress_stack`]
+/// * `P` - The minimal length of repeats, it's `(1+EI+EJ)/9` - for other values use [`LzssDyn`] (for now)
 ///
 /// # Restrictions
 /// * `EJ` must be larger than `0`
@@ -72,6 +73,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
             ei: EI,
             ej: EJ,
             c: C,
+            p: Self::P,
         }
     }
 
@@ -220,7 +222,7 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
 
     // non-public helpers
 
-    pub(crate) const P: usize = (1 + EI + EJ) / 9; /* If match length <= P then output one character */
+    pub(crate) const P: usize = default_p(EI, EJ); /* If match length <= P then output one character */
     pub(crate) const F: usize = (1 << EJ) + Self::P; /* lookahead buffer size */
     pub(crate) const MIN_GAP_SIZE: usize = Self::P + 4;
 

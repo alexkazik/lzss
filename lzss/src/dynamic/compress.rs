@@ -57,7 +57,7 @@ impl LzssDyn {
                     }
                 }
             }
-            if y <= self.p() {
+            if y <= self.p {
                 bit_writer
                     .write_bits(0x100 | u32::from(c), 9)
                     .map_err(LzssError::WriteError)?;
@@ -65,7 +65,7 @@ impl LzssDyn {
             } else {
                 bit_writer
                     .write_bits(
-                        (((x & (self.n() - 1)) as u32) << self.ej) | ((y - (self.p() + 1)) as u32),
+                        (((x & (self.n() - 1)) as u32) << self.ej) | ((y - (self.p + 1)) as u32),
                         1 + self.ei + self.ej,
                     )
                     .map_err(LzssError::WriteError)?;

@@ -10,12 +10,14 @@ mod decompress;
 /// * `ei` - The number of bits in the offset, usually `10..13`
 /// * `ej` - The number of bits in the length, usually `4..5`
 /// * `c` - The initial fill byte of the buffer, usually `0x20` (space)
+/// * `p` - The minimal length of repeats, is set to `(1+ei+ej)/9` if not specified
 ///
 /// # Restrictions
 /// * `ej` must be larger than `0`
 /// * `ei` must be larger than `ej`
 /// * `ei + ej` must be at least 8
 /// * `ei + ej` must be 24 or less
+/// * `p` must be equal or larger than `(1+ei+ej)/9` and less than `1<<ej`
 ///
 /// # Example
 /// ```rust
@@ -34,6 +36,11 @@ pub struct LzssDyn {
     pub(crate) ei: usize,
     pub(crate) ej: usize,
     pub(crate) c: u8,
+    pub(crate) p: usize,
+}
+
+pub(crate) const fn default_p(ei: usize, ej: usize) -> usize {
+    (1 + ei + ej) / 9
 }
 
 impl LzssDyn {
@@ -43,6 +50,34 @@ impl LzssDyn {
     ///
     /// For creating a const see [`Lzss::as_dyn`](crate::generic::Lzss::as_dyn).
     pub fn new(ei: usize, ej: usize, c: u8) -> Result<Self, LzssDynError> {
+        Self::new_with_p(ei, ej, c, None)
+    }
+
+    /// Create new Lzss parameters.
+    ///
+    /// If the parameter are not valid (see above) an error is returned.
+    ///
+    /// If the parameter `p` is omitted then `(1+ei+ej)/9` is used, which
+    /// is also used with [`LzssDyn::new`].
+    ///
+    /// # Notice
+    ///
+    /// In case of an invalid `p` a [`LzssDynError::EiEjToLarge`] is returned.
+    /// This can't be fixed in this version because it's a breaking change,
+    /// but will be fixed in the next major version.
+    ///
+    /// The same major version will replace `new` with this function (and remove this).
+    pub const fn new_with_p(
+        ei: usize,
+        ej: usize,
+        c: u8,
+        p: Option<usize>,
+    ) -> Result<Self, LzssDynError> {
+        let default_p = default_p(ei, ej);
+        let p = match p {
+            Some(p) => p,
+            None => default_p,
+        };
         if ej == 0 {
             Err(LzssDynError::EjIsZero)
         } else if ej >= ei {
@@ -51,8 +86,11 @@ impl LzssDyn {
             Err(LzssDynError::EiEjToSmall)
         } else if ei + ej > 24 || (ei as u32) + 1 >= usize::BITS {
             Err(LzssDynError::EiEjToLarge)
+        } else if p < default_p || p > (1 << ej) {
+            #[allow(clippy::if_same_then_else)]
+            Err(LzssDynError::EiEjToLarge)
         } else {
-            Ok(LzssDyn { ei, ej, c })
+            Ok(LzssDyn { ei, ej, c, p })
         }
     }
 
@@ -83,16 +121,17 @@ impl LzssDyn {
         1 << self.ei
     }
 
+    /// Get the p parameter.
     #[inline(always)]
     #[must_use]
-    pub(crate) const fn p(&self) -> usize {
-        (1 + self.ei + self.ej) / 9
+    pub const fn p(&self) -> usize {
+        self.p
     }
 
     #[inline(always)]
     #[must_use]
     pub(crate) const fn f(&self) -> usize {
-        (1 << self.ej) + self.p()
+        (1 << self.ej) + self.p
     }
 
     /// Compress the input data into the output.
@@ -204,6 +243,10 @@ mod tests {
         169, 216, 109, 183, 11, 101, 149, 246, 13, 18, 195, 116, 176, 191, 81, 152, 204, 102, 83,
         32, 0, 19, 57, 152, 3, 16,
     ];
+    const COMPRESSED_DATA2: [u8; 26] = [
+        169, 216, 109, 183, 11, 101, 149, 245, 133, 18, 195, 116, 176, 191, 64, 152, 204, 102, 83,
+        41, 140, 202, 103, 51, 0, 64,
+    ];
 
     #[test]
     fn test_decompress() {
@@ -225,6 +268,30 @@ mod tests {
             )
             .void_unwrap();
         assert_eq!(output.as_slice(), COMPRESSED_DATA);
+    }
+
+    #[test]
+    fn test_decompress_p2() {
+        let output = LzssDyn::new_with_p(10, 4, 0x20, Some(2))
+            .unwrap()
+            .decompress(
+                SliceReader::new(&COMPRESSED_DATA2),
+                VecWriter::with_capacity(TEST_DATA.len()),
+            )
+            .void_unwrap();
+        assert_eq!(output.as_slice(), TEST_DATA);
+    }
+
+    #[test]
+    fn test_compress_p2() {
+        let output = LzssDyn::new_with_p(10, 4, 0x20, Some(2))
+            .unwrap()
+            .compress(
+                SliceReader::new(TEST_DATA),
+                VecWriter::with_capacity(COMPRESSED_DATA2.len()),
+            )
+            .void_unwrap();
+        assert_eq!(output.as_slice(), COMPRESSED_DATA2);
     }
 
     #[test]

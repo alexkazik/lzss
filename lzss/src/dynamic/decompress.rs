@@ -38,7 +38,7 @@ impl LzssDyn {
                     let inp = (inp << (self.ei + self.ej - 8)) | inp2;
                     let i = (inp >> self.ej) as usize;
                     let j = (inp & ((1 << self.ej) - 1)) as usize;
-                    for k in 0..=j + self.p() {
+                    for k in 0..=j + self.p {
                         let b = get!(buffer, (i + k) & (self.n() - 1));
                         writer.write(b).map_err(LzssError::WriteError)?;
                         set!(buffer, r, b);
