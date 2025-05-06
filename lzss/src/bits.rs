@@ -8,7 +8,7 @@ pub(crate) struct BitReader<'a, R> {
 
 impl<R: Read> BitReader<'_, R> {
     #[inline(always)]
-    pub(crate) fn new(reader: &mut R) -> BitReader<R> {
+    pub(crate) fn new(reader: &mut R) -> BitReader<'_, R> {
         BitReader {
             bits_in_buf: 0,
             buf: 0,
@@ -40,7 +40,7 @@ pub(crate) struct BitWriter<'a, W> {
 
 impl<W: Write> BitWriter<'_, W> {
     #[inline(always)]
-    pub(crate) fn new(writer: &mut W) -> BitWriter<W> {
+    pub(crate) fn new(writer: &mut W) -> BitWriter<'_, W> {
         BitWriter {
             bits_in_buf: 0,
             buf: 0,

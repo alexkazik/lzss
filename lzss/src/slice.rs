@@ -1,5 +1,6 @@
 use crate::read_write::{Read, Write};
 use core::marker::PhantomData;
+use core::ptr;
 use void::Void;
 
 /// Read from a slice.
@@ -38,7 +39,7 @@ impl Read for SliceReader<'_> {
     type Error = Void;
     #[inline(always)]
     fn read(&mut self) -> Result<Option<u8>, Self::Error> {
-        if self.pos == self.end {
+        if ptr::eq(self.pos, self.end) {
             // reached eof
             Ok(None)
         } else {
@@ -113,7 +114,7 @@ impl Write for SliceWriter<'_> {
     type Error = SliceWriteError;
     #[inline(always)]
     fn write(&mut self, data: u8) -> Result<(), Self::Error> {
-        if self.pos == self.end {
+        if ptr::eq(self.pos, self.end) {
             Err(SliceWriteError)
         } else {
             unsafe { self.pos.write(data) };
@@ -174,7 +175,7 @@ impl Write for SliceWriterExact<'_> {
     type Error = SliceWriteError;
     #[inline(always)]
     fn write(&mut self, data: u8) -> Result<(), Self::Error> {
-        if self.pos == self.end {
+        if ptr::eq(self.pos, self.end) {
             Err(SliceWriteError)
         } else {
             unsafe { self.pos.write(data) };
@@ -184,7 +185,7 @@ impl Write for SliceWriterExact<'_> {
     }
     #[inline(always)]
     fn finish(self) -> Result<Self::Output, Self::Error> {
-        if self.pos == self.end {
+        if ptr::eq(self.pos, self.end) {
             Ok(())
         } else {
             Err(SliceWriteError)
