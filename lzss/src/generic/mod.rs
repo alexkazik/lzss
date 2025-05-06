@@ -15,8 +15,8 @@ mod decompress;
 /// * `EI` - The number of bits in the offset, usually `10..13`
 /// * `EJ` - The number of bits in the length, usually `4..5`
 /// * `C` - The initial fill byte of the buffer, usually `0x20` (space)
-/// * `N` - Equals `1 << EI`, the size of the buffer for [`Lzss::decompress`]
-/// * `N2` - Equals `2 << EI` (`N * 2`), the size of the buffer for [`Lzss::compress`]
+/// * `N` - Equals `1 << EI`, the size of the buffer for [`Lzss::decompress_stack`]
+/// * `N2` - Equals `2 << EI` (`N * 2`), the size of the buffer for [`Lzss::compress_stack`]
 ///
 /// # Restrictions
 /// * `EJ` must be larger than `0`
