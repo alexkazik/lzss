@@ -1,7 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "safe", forbid(unsafe_code))]
 #![allow(incomplete_features)]
-#![feature(generic_const_exprs)]
+#![feature(gca_const_items, inherent_associated_types, gca_min_const_items)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(missing_docs)]
 #![warn(clippy::pedantic)]
@@ -77,7 +77,7 @@
 //! # Example
 //! ```rust
 //! # use lzss::{Lzss, SliceReader, SliceWriter};
-//! type MyLzss = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
+//! type MyLzss = Lzss<10, 4, 0x20>;
 //! let input = b"Example Data";
 //! let mut output = [0; 30];
 //! let result = MyLzss::compress_stack(

@@ -58,7 +58,7 @@ mod tests {
     use crate::io_simple::{IOSimpleReader, IOSimpleWriter};
     use std::io::{Cursor, ErrorKind};
 
-    type TestLZSS = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
+    type TestLZSS = Lzss<10, 4, 0x20>;
     const TEST_DATA: &[u8; 27] = b"Sample   Data   11221233123";
 
     #[test]

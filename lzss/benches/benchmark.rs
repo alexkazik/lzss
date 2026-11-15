@@ -4,7 +4,7 @@ use lzss::{Lzss, LzssDyn, ResultLzssErrorVoidExt, SliceReader, VecWriter};
 const EI: usize = 10;
 const EJ: usize = 4;
 
-type MyLzss = Lzss<EI, EJ, 0x20, { 1 << EI }, { 2 << EI }>;
+type MyLzss = Lzss<EI, EJ, 0x20>;
 
 const MY_DYN_LZSS: LzssDyn = MyLzss::as_dyn();
 
