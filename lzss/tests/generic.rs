@@ -1,7 +1,7 @@
 #![cfg(feature = "alloc")]
 
 use common::{EXAMPLE_DATA, INIT_BYTE};
-use lzss::{Lzss, ResultLzssErrorVoidExt, SliceReader, VecWriter};
+use lzss::{Lzss, SliceReader, UnwrapReadWriteExt, VecWriter};
 
 mod common;
 
@@ -19,12 +19,12 @@ macro_rules! test_generic {
                 SliceReader::new(EXAMPLE_DATA),
                 VecWriter::with_capacity(EXAMPLE_DATA.len()),
             )
-            .void_unwrap();
+            .unwrap_read_write();
             let decompressed = MyLzss::decompress_heap(
                 SliceReader::new(&compressed),
                 VecWriter::with_capacity(EXAMPLE_DATA.len()),
             )
-            .void_unwrap();
+            .unwrap_read_write();
 
             // check if the decompressed matches the original
             assert_eq!(EXAMPLE_DATA, &decompressed[..]);
@@ -35,7 +35,7 @@ macro_rules! test_generic {
                     SliceReader::new(EXAMPLE_DATA),
                     VecWriter::with_capacity(EXAMPLE_DATA.len()),
                 )
-                .void_unwrap();
+                .unwrap_read_write();
             assert_eq!(compressed, compressed_dyn);
         }
     };

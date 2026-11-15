@@ -255,8 +255,8 @@ impl<const EI: usize, const EJ: usize, const C: u8, const N: usize, const N2: us
 mod tests {
     use crate::generic::Lzss;
     use crate::slice::SliceReader;
+    use crate::unwrap::UnwrapReadWriteExt;
     use crate::vec::VecWriter;
-    use crate::void::ResultLzssErrorVoidExt;
 
     type TestLZSS = Lzss<10, 4, 0x20, { 1 << 10 }, { 2 << 10 }>;
 
@@ -272,7 +272,7 @@ mod tests {
             SliceReader::new(&COMPRESSED_DATA),
             VecWriter::with_capacity(TEST_DATA.len()),
         )
-        .void_unwrap();
+        .unwrap_read_write();
         assert_eq!(output.as_slice(), TEST_DATA);
     }
 
@@ -284,7 +284,7 @@ mod tests {
             VecWriter::with_capacity(TEST_DATA.len()),
             &mut buffer,
         )
-        .void_unwrap();
+        .unwrap_read_write();
         assert_eq!(output.as_slice(), TEST_DATA);
     }
 
@@ -294,7 +294,7 @@ mod tests {
             SliceReader::new(TEST_DATA),
             VecWriter::with_capacity(COMPRESSED_DATA.len()),
         )
-        .void_unwrap();
+        .unwrap_read_write();
         assert_eq!(output.as_slice(), COMPRESSED_DATA);
     }
 
@@ -306,7 +306,7 @@ mod tests {
             VecWriter::with_capacity(COMPRESSED_DATA.len()),
             &mut buffer,
         )
-        .void_unwrap();
+        .unwrap_read_write();
         assert_eq!(output.as_slice(), COMPRESSED_DATA);
     }
 
@@ -329,7 +329,7 @@ mod tests {
             SliceReader::new(big_test_data),
             VecWriter::with_capacity(big_test_data.len()),
         )
-        .void_unwrap();
+        .unwrap_read_write();
         // compress_in_place
         let offset: usize = TestLZSS::MIN_OFFSET + big_test_data.len() / 8;
         let mut io = vec![0; offset + big_test_data.len()];
@@ -344,7 +344,7 @@ mod tests {
             SliceReader::new(&io[0..c]),
             VecWriter::with_capacity(big_test_data.len()),
         )
-        .void_unwrap();
+        .unwrap_read_write();
         assert_eq!(output2.as_slice(), big_test_data);
     }
 }

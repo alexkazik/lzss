@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, BatchSize, Criterion};
-use lzss::{Lzss, LzssDyn, ResultLzssErrorVoidExt, SliceReader, VecWriter};
+use lzss::{Lzss, LzssDyn, SliceReader, UnwrapReadWriteExt, VecWriter};
 
 const EI: usize = 10;
 const EJ: usize = 4;
@@ -19,7 +19,8 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                 )
             },
             |(r, w, mut b)| {
-                MyLzss::compress_with_buffer(r, w, (&mut b[..]).try_into().unwrap()).void_unwrap()
+                MyLzss::compress_with_buffer(r, w, (&mut b[..]).try_into().unwrap())
+                    .unwrap_read_write()
             },
             BatchSize::SmallInput,
         )
@@ -48,7 +49,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                     SliceReader::new(EXAMPLE_DATA),
                     VecWriter::with_capacity(EXAMPLE_DATA.len()),
                 )
-                .void_unwrap();
+                .unwrap_read_write();
                 (
                     compressed,
                     VecWriter::with_capacity(EXAMPLE_DATA.len()),
@@ -61,7 +62,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                     w,
                     (&mut b[..]).try_into().unwrap(),
                 )
-                .void_unwrap()
+                .unwrap_read_write()
             },
             BatchSize::SmallInput,
         )
@@ -75,7 +76,11 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                     vec![0; 2 * (1 << 10)],
                 )
             },
-            |(r, w, mut b)| MY_DYN_LZSS.compress_with_buffer(r, w, &mut b).void_unwrap(),
+            |(r, w, mut b)| {
+                MY_DYN_LZSS
+                    .compress_with_buffer(r, w, &mut b)
+                    .unwrap_read_write()
+            },
             BatchSize::SmallInput,
         )
     });
@@ -86,7 +91,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                     SliceReader::new(EXAMPLE_DATA),
                     VecWriter::with_capacity(EXAMPLE_DATA.len()),
                 )
-                .void_unwrap();
+                .unwrap_read_write();
                 (
                     compressed,
                     VecWriter::with_capacity(EXAMPLE_DATA.len()),
@@ -96,7 +101,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             |(r, w, mut b)| {
                 MY_DYN_LZSS
                     .decompress_with_buffer(SliceReader::new(&r), w, &mut b)
-                    .void_unwrap()
+                    .unwrap_read_write()
             },
             BatchSize::SmallInput,
         )

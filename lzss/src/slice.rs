@@ -13,8 +13,8 @@ use core::ptr;
 /// assert_eq!(input.read(), Ok(None));
 /// ```
 ///
-/// Use [`void_read_unwrap`](crate::ResultLzssErrorVoidReadExt::void_read_unwrap) to remove the `!` from the result.
-/// Or [`void_unwrap`](crate::ResultLzssErrorVoidExt::void_unwrap) if also the writer produces `!`.
+/// Use [`unwrap_read`](crate::UnwrapReadExt::unwrap_read) to remove the `!` from the result.
+/// Or [`unwrap_read_write`](crate::UnwrapReadWriteExt::unwrap_read_write) if also the writer produces `!`.
 pub struct SliceReader<'a> {
     pos: *const u8,
     end: *const u8,

@@ -104,8 +104,10 @@ pub use crate::generic::Lzss;
 pub use crate::io_simple::{IOSimpleReader, IOSimpleWriter};
 pub use crate::read_write::{Read, Write};
 pub use crate::slice::{SliceReader, SliceWriteError, SliceWriter, SliceWriterExact};
+pub use crate::unwrap::{UnwrapReadExt, UnwrapReadWriteExt, UnwrapWriteExt};
 #[cfg(feature = "alloc")]
 pub use crate::vec::VecWriter;
+#[allow(deprecated)]
 pub use crate::void::{
     ResultLzssErrorVoidExt, ResultLzssErrorVoidReadExt, ResultLzssErrorVoidWriteExt,
 };
@@ -120,6 +122,7 @@ mod macros;
 mod read_write;
 #[cfg_attr(feature = "safe", path = "slice_safe.rs")]
 mod slice;
+mod unwrap;
 #[cfg(feature = "alloc")]
 mod vec;
 mod void;

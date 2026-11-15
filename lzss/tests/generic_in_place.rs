@@ -1,5 +1,5 @@
 use common::{EXAMPLE_DATA, INIT_BYTE};
-use lzss::{Lzss, ResultLzssErrorVoidReadExt, SliceReader, SliceWriter};
+use lzss::{Lzss, SliceReader, SliceWriter, UnwrapReadExt};
 
 mod common;
 
@@ -22,7 +22,7 @@ fn compress_in_place() {
             SliceReader::new(&compressed[0..compressed_len]),
             SliceWriter::new(&mut decompressed),
         )
-        .void_read_unwrap()
+        .unwrap_read()
         {
             Ok(decompressed_len) => {
                 // if there was a remaining not compressed data then check the size and copy it
